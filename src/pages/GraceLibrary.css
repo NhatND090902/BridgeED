@@ -1,0 +1,885 @@
+/* Grace Library Page Styles */
+
+/* ===========================
+   Container & Header
+   =========================== */
+.grace-library-container {
+  min-height: 100%;
+  background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.library-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.library-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+  animation: pulse 15s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.header-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: white;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* ===========================
+   Library Cards
+   =========================== */
+.library-card {
+  background: white;
+  border-radius: 20px;
+  padding: 1.5rem;
+  height: 100%;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+}
+
+.library-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border-color: var(--card-color);
+}
+
+.library-card:hover .card-decoration {
+  transform: scale(1);
+  opacity: 0.1;
+}
+
+.library-card:hover .card-action {
+  color: var(--card-color);
+}
+
+.library-card:hover .card-action i {
+  transform: translateX(5px);
+}
+
+.card-decoration {
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 150%;
+  height: 150%;
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.4s ease;
+  pointer-events: none;
+}
+
+.card-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  color: white;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
+}
+
+.card-content {
+  position: relative;
+  z-index: 1;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.card-description {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.card-action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #999;
+  transition: all 0.3s ease;
+}
+
+.card-action i {
+  transition: transform 0.3s ease;
+}
+
+/* ===========================
+   Motivational Banner
+   =========================== */
+.motivational-banner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 24px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.motivational-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1));
+  pointer-events: none;
+}
+
+.banner-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1rem 2rem;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ===========================
+   Modal Styles
+   =========================== */
+.library-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.library-modal {
+  background: white;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header-custom {
+  padding: 2rem;
+  color: white;
+  position: relative;
+  text-align: center;
+}
+
+.modal-icon {
+  width: 72px;
+  height: 72px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  backdrop-filter: blur(10px);
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.modal-body-custom {
+  padding: 1.5rem 2rem 2rem;
+  max-height: calc(90vh - 200px);
+  overflow-y: auto;
+}
+
+.modal-description {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.modal-content-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.content-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.content-item:hover {
+  background: #f0f4f8;
+  transform: translateX(5px);
+}
+
+.item-number {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.item-text {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #333;
+  line-height: 1.5;
+  padding-top: 4px;
+}
+
+.modal-footer-custom {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.btn-start-practice {
+  border: none;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-start-practice:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+}
+
+/* ===========================
+   Responsive Styles
+   =========================== */
+@media (max-width: 768px) {
+  .library-header {
+    padding-bottom: 1rem;
+  }
+
+  .header-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    font-size: 2rem;
+    border-radius: 16px;
+  }
+
+  .library-card {
+    padding: 1.25rem;
+  }
+
+  .card-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    font-size: 1.5rem;
+    border-radius: 14px;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+
+  .motivational-banner {
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .banner-stats {
+    margin-top: 1rem;
+  }
+
+  .modal-header-custom {
+    padding: 1.5rem;
+  }
+
+  .modal-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 1.75rem;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+  }
+
+  .modal-body-custom {
+    padding: 1rem 1.5rem 1.5rem;
+  }
+
+  .content-item {
+    padding: 0.875rem;
+  }
+
+  .item-number {
+    min-width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+
+  .item-text {
+    font-size: 0.9rem;
+  }
+
+  .btn-start-practice {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .library-card {
+    padding: 1rem;
+    border-radius: 16px;
+  }
+
+  .card-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    font-size: 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-size: 0.95rem;
+  }
+
+  .card-description {
+    font-size: 0.85rem;
+  }
+
+  .modal-header-custom {
+    padding: 1.25rem;
+  }
+
+  .modal-close-btn {
+    width: 36px;
+    height: 36px;
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+}
+
+/* ===========================
+   Custom Scrollbar for Modal
+   =========================== */
+.modal-body-custom::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-body-custom::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.modal-body-custom::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.modal-body-custom::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+/* ===========================
+   Card Entry Animations
+   =========================== */
+.library-card {
+  animation: cardFadeIn 0.5s ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.col-12:nth-child(1) .library-card { animation-delay: 0.05s; }
+.col-12:nth-child(2) .library-card { animation-delay: 0.1s; }
+.col-12:nth-child(3) .library-card { animation-delay: 0.15s; }
+.col-12:nth-child(4) .library-card { animation-delay: 0.2s; }
+.col-12:nth-child(5) .library-card { animation-delay: 0.25s; }
+.col-12:nth-child(6) .library-card { animation-delay: 0.3s; }
+
+/* ===========================
+   Overall Progress Section
+   =========================== */
+.overall-progress-section {
+  margin-top: -40px;
+  position: relative;
+  z-index: 10;
+}
+
+.overall-progress-card {
+  background: white;
+  border-radius: 20px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.overall-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.overall-progress-bar-wrapper {
+  margin-top: 0.5rem;
+}
+
+.overall-percentage {
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.btn-reset-progress {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: 2px solid #e9ecef;
+  background: white;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-reset-progress:hover {
+  border-color: #dc3545;
+  color: #dc3545;
+  background: #fff5f5;
+}
+
+/* ===========================
+   Card Progress Section
+   =========================== */
+.card-progress-section {
+  margin-top: 0.5rem;
+}
+
+.progress-bar-wrapper {
+  width: 100%;
+}
+
+.progress-text {
+  font-size: 0.75rem;
+}
+
+/* ===========================
+   Completion Badge
+   =========================== */
+.completion-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: badgePop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes badgePop {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* ===========================
+   Modal Task List Styles
+   =========================== */
+.modal-progress-section {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.task-list-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 0.75rem;
+  border: 2px solid transparent;
+}
+
+.task-item:hover {
+  background: #f0f4f8;
+  border-color: #e9ecef;
+}
+
+.task-item.completed {
+  background: #e8f5e9;
+  border-color: #c8e6c9;
+}
+
+.task-checkbox {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 2px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  margin-top: 2px;
+}
+
+.task-checkbox i {
+  font-size: 0.875rem;
+}
+
+.task-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.task-number {
+  min-width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.task-text {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #333;
+  line-height: 1.5;
+  padding-top: 3px;
+  transition: all 0.3s ease;
+}
+
+.task-text.line-through {
+  text-decoration: line-through;
+  color: #888;
+}
+
+/* ===========================
+   Completion Message
+   =========================== */
+.completion-message {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  animation: fadeIn 0.5s ease;
+}
+
+.completion-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* ===========================
+   Modal Close Button
+   =========================== */
+.btn-close-modal {
+  border: none;
+  color: white;
+  padding: 0.875rem 2rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-close-modal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+}
+
+/* ===========================
+   Reset Confirmation Modal
+   =========================== */
+.reset-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.reset-confirm-modal {
+  background: white;
+  border-radius: 24px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reset-confirm-icon {
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  color: white;
+  font-size: 2rem;
+}
+
+/* ===========================
+   Responsive Updates
+   =========================== */
+@media (max-width: 768px) {
+  .overall-progress-section {
+    margin-top: -30px;
+  }
+
+  .overall-progress-card {
+    padding: 1.25rem;
+  }
+
+  .overall-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.25rem;
+    border-radius: 12px;
+  }
+
+  .overall-percentage {
+    font-size: 1.25rem;
+  }
+
+  .btn-reset-progress {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .task-item {
+    padding: 0.875rem;
+  }
+
+  .task-checkbox {
+    min-width: 22px;
+    height: 22px;
+  }
+
+  .task-number {
+    min-width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+  }
+
+  .task-text {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .overall-progress-section {
+    margin-top: -20px;
+  }
+
+  .overall-progress-card {
+    padding: 1rem;
+  }
+
+  .overall-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    border-radius: 10px;
+  }
+
+  .completion-badge {
+    width: 28px;
+    height: 28px;
+    font-size: 0.875rem;
+    top: 8px;
+    right: 8px;
+  }
+
+  .reset-confirm-modal {
+    padding: 1.5rem;
+  }
+
+  .reset-confirm-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+}

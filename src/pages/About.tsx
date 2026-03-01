@@ -76,15 +76,15 @@ const About = () => {
               <ul className="mission-list">
                 <li>
                   <i className="bi bi-check-circle-fill text-success me-2"></i>
-                  Rebuild and strengthen connections between students, parents, and teachers through the <strong>5 GRACE values</strong>
+                  Tái thiết lập và tăng cường kết nối giữa học sinh - phụ huynh - giáo viên thông qua 5 giá trị GRACE
                 </li>
                 <li>
                   <i className="bi bi-check-circle-fill text-success me-2"></i>
-                  Help students understand themselves and become more <strong>proactive in learning</strong>
+                  Giúp học sinh hiểu rõ bản thân và chủ động hơn trong học tập
                 </li>
                 <li>
                   <i className="bi bi-check-circle-fill text-success me-2"></i>
-                  Support teachers and schools in understanding students' psychology and attitudes to <strong>improve educational methods</strong>
+                  Hỗ trợ giáo viên và nhà trường nắm bắt tâm lý, thái độ của học sinh để điều chỉnh phương pháp giáo dục
                 </li>
               </ul>
               <div className="grace-badge">
@@ -112,31 +112,31 @@ const About = () => {
                   <div className="info-icon-small">
                     <i className="bi bi-people-fill"></i>
                   </div>
-                  <p>Diverse target users</p>
+                  <p>Đa dạng đối tượng</p>
                 </div>
                 <div className="info-item">
                   <div className="info-icon-small">
                     <i className="bi bi-heart-pulse-fill"></i>
                   </div>
-                  <p>BridgeED — The educational bridge powered by <strong>GRACE</strong></p>
+                  <p><strong>BridgeED</strong> - Cầu nối giáo dục bằng GRACE </p>
                 </div>
                 <div className="info-item">
                   <div className="info-icon-small">
                     <i className="bi bi-translate"></i>
                   </div>
-                  <p>Supports both Vietnamese and English</p>
+                  <p>Tiếng Việt & Tiếng Anh</p>
                 </div>
                 <div className="info-item">
                   <div className="info-icon-small">
                     <i className="bi bi-chat-heart-fill"></i>
                   </div>
-                  <p>Speak proactively — Respond kindly</p>
+                  <p>Nói chuyện chủ động — Phản hồi tử tế</p>
                 </div>
                 <div className="info-item full-width">
                   <div className="info-icon-small">
                     <i className="bi bi-phone-fill"></i>
                   </div>
-                  <p>Available as responsive website and mobile application</p>
+                  <p>Có sẵn dưới dạng website đáp ứng và ứng dụng di động</p>
                 </div>
               </div>
             </div>
@@ -159,19 +159,19 @@ const About = () => {
               <div className="notice-list">
                 <div className="notice-item">
                   <div className="notice-number">1</div>
-                  <p>This application <strong>does not replace</strong> teachers or psychological counselors, but serves as a <strong>support tool</strong> for connection, reflection, and positive learning</p>
+                  <p>ứng dụng không thay thế giáo viên/ cố vấn tâm lý mà là công cụ hỗ trợ kết nối, phản chiếu, học tập tích cực</p>
                 </div>
                 <div className="notice-item">
                   <div className="notice-number">2</div>
-                  <p>Anonymous features are <strong>conditionally monitored</strong> to ensure psychological safety</p>
+                  <p>Tính năng ẩn danh được <strong>giám sát có điều kiện</strong> để đảm bảo an toàn tâm lý</p>
                 </div>
                 <div className="notice-item">
                   <div className="notice-number">3</div>
-                  <p>Privacy is respected: users can <strong>hide or delete</strong> personal content at any time</p>
+                  <p>Quyền riêng tư được tôn trọng: người dùng có thể <strong>ẩn hoặc xóa</strong> nội dung cá nhân bất cứ lúc nào</p>
                 </div>
                 <div className="notice-item">
                   <div className="notice-number">4</div>
-                  <p>Students are encouraged to use the platform at least <strong>10 minutes per day</strong> for effectiveness</p>
+                  <p>Học sinh được khuyến khích sử dụng nền tảng ít nhất <strong>10 phút mỗi ngày</strong> để đạt hiệu quả</p>
                 </div>
               </div>
             </div>
