@@ -43,6 +43,16 @@ const EmotionTracker = () => {
   const [note, setNote] = useState<string>('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [recentLogs, setRecentLogs] = useState<EmotionLog[]>([]);
+  
+  // Edit modal states
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingLog, setEditingLog] = useState<EmotionLog | null>(null);
+  const [editEmotion, setEditEmotion] = useState<string>('');
+  const [editLevel, setEditLevel] = useState<number>(3);
+  const [editNote, setEditNote] = useState<string>('');
+  const [editDate, setEditDate] = useState<string>('');
+  const [editTime, setEditTime] = useState<string>('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Load recent logs on mount
   useEffect(() => {
@@ -107,6 +117,90 @@ const EmotionTracker = () => {
       loadRecentLogs();
     } catch (error) {
       console.error('Error saving emotion log:', error);
+    }
+  };
+
+  // Open edit modal
+  const handleOpenEditModal = (log: EmotionLog) => {
+    setEditingLog(log);
+    setEditEmotion(log.emotionKey);
+    setEditLevel(log.level);
+    setEditNote(log.note);
+    
+    // Parse date and time from timestamp
+    const dateObj = new Date(log.timestamp);
+    setEditDate(dateObj.toISOString().split('T')[0]);
+    setEditTime(dateObj.toTimeString().slice(0, 5));
+    
+    setShowEditModal(true);
+    setShowDeleteConfirm(false);
+  };
+
+  // Close edit modal
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setEditingLog(null);
+    setShowDeleteConfirm(false);
+  };
+
+  // Update log
+  const handleUpdateLog = () => {
+    if (!editingLog || !editEmotion) return;
+
+    const emotion = EMOTIONS.find(em => em.key === editEmotion);
+    const levelData = LEVELS.find(l => l.value === editLevel);
+    
+    if (!emotion || !levelData) return;
+
+    // Create new timestamp from date and time
+    const newTimestamp = new Date(`${editDate}T${editTime}`).getTime();
+
+    const updatedLog: EmotionLog = {
+      ...editingLog,
+      emotion: emotion.label,
+      emotionKey: emotion.key,
+      icon: emotion.icon,
+      emoji: emotion.emoji,
+      color: emotion.color,
+      level: editLevel,
+      levelLabel: levelData.label,
+      note: editNote.trim(),
+      date: editDate,
+      timestamp: newTimestamp,
+    };
+
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      const logs: EmotionLog[] = stored ? JSON.parse(stored) : [];
+      const updatedLogs = logs.map(log => 
+        log.id === editingLog.id ? updatedLog : log
+      );
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedLogs));
+      
+      // Show success and close modal
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+      handleCloseEditModal();
+      loadRecentLogs();
+    } catch (error) {
+      console.error('Error updating emotion log:', error);
+    }
+  };
+
+  // Delete log
+  const handleDeleteLog = () => {
+    if (!editingLog) return;
+
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      const logs: EmotionLog[] = stored ? JSON.parse(stored) : [];
+      const filteredLogs = logs.filter(log => log.id !== editingLog.id);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredLogs));
+      
+      handleCloseEditModal();
+      loadRecentLogs();
+    } catch (error) {
+      console.error('Error deleting emotion log:', error);
     }
   };
 
@@ -250,10 +344,15 @@ const EmotionTracker = () => {
                 <div className="card-header-custom">
                   <i className="bi bi-clock-history"></i>
                   <span>Lịch sử gần đây</span>
+                  <span className="click-hint">Nhấn để chỉnh sửa</span>
                 </div>
                 <div className="recent-entries-list">
                   {recentLogs.map((log) => (
-                    <div key={log.id} className="recent-entry-item">
+                    <div 
+                      key={log.id} 
+                      className="recent-entry-item clickable"
+                      onClick={() => handleOpenEditModal(log)}
+                    >
                       <div 
                         className="entry-icon"
                         style={{ backgroundColor: log.color }}
@@ -276,6 +375,9 @@ const EmotionTracker = () => {
                           {formatDate(log.timestamp)}
                         </span>
                       </div>
+                      <div className="entry-edit-icon">
+                        <i className="bi bi-pencil-square"></i>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -284,6 +386,149 @@ const EmotionTracker = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {showEditModal && editingLog && (
+        <div className="modal-overlay" onClick={handleCloseEditModal}>
+          <div className="edit-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header-custom">
+              <h5 className="modal-title">
+                <i className="bi bi-pencil-square me-2"></i>
+                Chỉnh sửa cảm xúc
+              </h5>
+              <button className="modal-close" onClick={handleCloseEditModal}>
+                <i className="bi bi-x-lg"></i>
+              </button>
+            </div>
+
+            <div className="modal-body-custom">
+              {/* Emotion Selection in Modal */}
+              <div className="edit-section">
+                <label className="edit-label">
+                  <i className="bi bi-heart-fill me-2"></i>
+                  Cảm xúc
+                </label>
+                <div className="edit-emotion-grid">
+                  {EMOTIONS.map((emotion) => (
+                    <button
+                      key={emotion.key}
+                      type="button"
+                      className={`edit-emotion-btn ${editEmotion === emotion.key ? 'active' : ''}`}
+                      onClick={() => setEditEmotion(emotion.key)}
+                      style={{ '--emotion-color': emotion.color } as React.CSSProperties}
+                    >
+                      <span className="edit-emotion-emoji">{emotion.emoji}</span>
+                      <span className="edit-emotion-label">{emotion.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Level Selection in Modal */}
+              <div className="edit-section">
+                <label className="edit-label">
+                  <i className="bi bi-speedometer2 me-2"></i>
+                  Mức độ
+                </label>
+                <div className="edit-level-selector">
+                  {LEVELS.map((levelOption) => (
+                    <button
+                      key={levelOption.value}
+                      type="button"
+                      className={`edit-level-btn ${editLevel === levelOption.value ? 'active' : ''}`}
+                      onClick={() => setEditLevel(levelOption.value)}
+                    >
+                      {levelOption.value}
+                    </button>
+                  ))}
+                </div>
+                <div className="edit-level-label">
+                  {LEVELS.find(l => l.value === editLevel)?.label}
+                </div>
+              </div>
+
+              {/* Date and Time Selection */}
+              <div className="edit-section">
+                <label className="edit-label">
+                  <i className="bi bi-calendar-event me-2"></i>
+                  Ngày và giờ
+                </label>
+                <div className="edit-datetime-row">
+                  <input
+                    type="date"
+                    className="edit-date-input"
+                    value={editDate}
+                    onChange={(e) => setEditDate(e.target.value)}
+                  />
+                  <input
+                    type="time"
+                    className="edit-time-input"
+                    value={editTime}
+                    onChange={(e) => setEditTime(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Note Field in Modal */}
+              <div className="edit-section">
+                <label className="edit-label">
+                  <i className="bi bi-pencil-fill me-2"></i>
+                  Ghi chú
+                </label>
+                <textarea
+                  className="edit-note-textarea"
+                  rows={3}
+                  placeholder="Viết mô tả ngắn về cảm xúc hoặc điều đã xảy ra..."
+                  value={editNote}
+                  onChange={(e) => setEditNote(e.target.value)}
+                ></textarea>
+              </div>
+
+              {/* Delete Confirmation */}
+              {showDeleteConfirm ? (
+                <div className="delete-confirm-section">
+                  <p className="delete-confirm-text">
+                    <i className="bi bi-exclamation-triangle me-2"></i>
+                    Bạn có chắc muốn xóa bản ghi này?
+                  </p>
+                  <div className="delete-confirm-buttons">
+                    <button 
+                      className="btn-cancel-delete"
+                      onClick={() => setShowDeleteConfirm(false)}
+                    >
+                      Hủy
+                    </button>
+                    <button 
+                      className="btn-confirm-delete"
+                      onClick={handleDeleteLog}
+                    >
+                      <i className="bi bi-trash me-1"></i>
+                      Xác nhận xóa
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="modal-actions">
+                  <button 
+                    className="btn-delete"
+                    onClick={() => setShowDeleteConfirm(true)}
+                  >
+                    <i className="bi bi-trash"></i>
+                  </button>
+                  <button 
+                    className="btn-save"
+                    onClick={handleUpdateLog}
+                    disabled={!editEmotion}
+                  >
+                    <i className="bi bi-check-lg me-2"></i>
+                    Lưu thay đổi
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
