@@ -51,6 +51,7 @@ const Dashboard = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<'emotion' | 'grace'>('emotion');
 
   const features = [
     {
@@ -339,317 +340,374 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="row g-3 mb-4">
-          <div className="col-4">
-            <div className="stat-card stat-total">
-              <div className="stat-icon">
-                <i className="bi bi-journal-check"></i>
-              </div>
-              <div className="stat-content">
-                <span className="stat-value">{stats.totalLogs}</span>
-                <span className="stat-label">Tổng số lần ghi nhận</span>
-              </div>
-            </div>
-          </div>
-          <div className="col-4">
-            <div className="stat-card stat-emotion">
-              <div className="stat-icon">
-                {stats.mostCommonEmotion ? (
-                  <span>{stats.mostCommonEmotion.emoji}</span>
-                ) : (
-                  <i className="bi bi-emoji-neutral"></i>
-                )}
-              </div>
-              <div className="stat-content">
-                <span className="stat-value">
-                  {stats.mostCommonEmotion?.emotion || '--'}
-                </span>
-                <span className="stat-label">Cảm xúc phổ biến nhất</span>
-              </div>
-            </div>
-          </div>
-          <div className="col-4">
-            <div className="stat-card stat-streak">
-              <div className="stat-icon">
-                <i className="bi bi-fire"></i>
-              </div>
-              <div className="stat-content">
-                <span className="stat-value">{stats.streak}</span>
-                <span className="stat-label">Chuỗi ngày liên tiếp</span>
-              </div>
-            </div>
-          </div>
+        {/* Tabs Navigation */}
+        <div className="dashboard-tabs mb-4">
+          <button
+            className={`dashboard-tab ${activeTab === 'emotion' ? 'active' : ''}`}
+            onClick={() => setActiveTab('emotion')}
+          >
+            <i className="bi bi-calendar-heart me-2"></i>
+            Lịch theo dõi cảm xúc
+          </button>
+          <button
+            className={`dashboard-tab ${activeTab === 'grace' ? 'active' : ''}`}
+            onClick={() => setActiveTab('grace')}
+          >
+            <i className="bi bi-journal-richtext me-2"></i>
+            Thống kê giá trị GRACE
+          </button>
         </div>
 
-        {/* Emotion Calendar */}
-        <div className="emotion-calendar-section mb-4">
-          <div className="calendar-header">
-            <div className="calendar-title">
-              <i className="bi bi-calendar-heart"></i>
-              <span>Lịch theo dõi cảm xúc</span>
-            </div>
-            <div className="calendar-nav">
-              <button className="nav-btn" onClick={goToPreviousMonth}>
-                <i className="bi bi-chevron-left"></i>
-              </button>
-              <button className="today-btn" onClick={goToToday}>
-                Hôm nay
-              </button>
-              <button className="nav-btn" onClick={goToNextMonth}>
-                <i className="bi bi-chevron-right"></i>
-              </button>
-            </div>
-          </div>
-
-          <div className="calendar-month-display">
-            {MONTHS_VI[currentDate.getMonth()]} {currentDate.getFullYear()}
-          </div>
-
-          {/* Day Headers */}
-          <div className="calendar-weekdays">
-            {DAYS_VI.map(day => (
-              <div key={day} className="weekday-header">
-                {day}
-              </div>
-            ))}
-          </div>
-
-          {/* Calendar Grid */}
-          <div className="calendar-grid">
-            {calendarData.map((date, index) => {
-              if (!date) {
-                return <div key={`empty-${index}`} className="calendar-day empty"></div>;
-              }
-
-              const dominantEmotion = getDominantEmotion(date);
-              const logsForDay = getLogsForDate(date);
-              const hasLogs = logsForDay.length > 0;
-              const isTodayDate = isToday(date);
-              const emotionColor = dominantEmotion 
-                ? EMOTION_COLORS[dominantEmotion.emotionKey]
-                : null;
-
-              return (
-                <button
-                  key={date.toISOString()}
-                  className={`calendar-day ${isTodayDate ? 'today' : ''} ${hasLogs ? 'has-data' : ''}`}
-                  onClick={() => handleDayClick(date)}
-                  style={emotionColor ? {
-                    backgroundColor: emotionColor.bg,
-                    color: emotionColor.text,
-                  } : undefined}
-                >
-                  <span className="day-number">{date.getDate()}</span>
-                  {hasLogs && (
-                    <span className="day-indicator">
-                      {dominantEmotion?.emoji}
-                    </span>
-                  )}
-                  {hasLogs && logsForDay.length > 1 && (
-                    <span className="day-count">+{logsForDay.length - 1}</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Legend */}
-          <div className="calendar-legend">
-            <span className="legend-title">Chú thích:</span>
-            <div className="legend-items">
-              {Object.entries(EMOTION_COLORS).map(([key, colors]) => {
-                const emotionLabels: { [k: string]: string } = {
-                  happy: 'Vui',
-                  calm: 'Bình tĩnh',
-                  neutral: 'Bình thường',
-                  sad: 'Buồn',
-                  angry: 'Tức giận',
-                  anxious: 'Lo lắng',
-                };
-                return (
-                  <div key={key} className="legend-item">
-                    <span 
-                      className="legend-color"
-                      style={{ backgroundColor: colors.bg }}
-                    ></span>
-                    <span className="legend-label">{emotionLabels[key]}</span>
+        {/* Tab Content */}
+        <div className="tab-content-wrapper">
+          {/* Emotion Calendar Tab */}
+          {activeTab === 'emotion' && (
+            <div className="tab-panel emotion-tab-panel">
+              {/* Emotion Stats Cards */}
+              <div className="row g-3 mb-4">
+                <div className="col-4">
+                  <div className="stat-card stat-total">
+                    <div className="stat-icon">
+                      <i className="bi bi-journal-check"></i>
+                    </div>
+                    <div className="stat-content">
+                      <span className="stat-value">{stats.totalLogs}</span>
+                      <span className="stat-label">Tổng số lần ghi nhận</span>
+                    </div>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Value Journal Section */}
-        <div className="value-journal-section mb-4">
-          <div className="section-header">
-            <h2 className="section-title">
-              <i className="bi bi-journal-richtext me-2"></i>
-              Thống kê giá trị GRACE
-            </h2>
-          </div>
-
-          {/* Value Stats Cards */}
-          <div className="row g-3 mb-4">
-            <div className="col-4">
-              <div className="stat-card stat-value-total">
-                <div className="stat-icon">
-                  <i className="bi bi-journal-text"></i>
                 </div>
-                <div className="stat-content">
-                  <span className="stat-value">{valueStats.totalJournals}</span>
-                  <span className="stat-label">Tổng số nhật ký</span>
-                </div>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="stat-card stat-practiced">
-                <div className="stat-icon">
-                  {valueStats.mostPracticed ? (
-                    <span>{valueStats.mostPracticed.emoji}</span>
-                  ) : (
-                    <i className="bi bi-star"></i>
-                  )}
-                </div>
-                <div className="stat-content">
-                  <span className="stat-value">
-                    {valueStats.mostPracticed?.label || '--'}
-                  </span>
-                  <span className="stat-label">Giá trị thực hành nhiều nhất</span>
-                </div>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="stat-card stat-recent">
-                <div className="stat-icon">
-                  {valueStats.recentValue ? (
-                    <span>{valueStats.recentValue.emoji}</span>
-                  ) : (
-                    <i className="bi bi-clock-history"></i>
-                  )}
-                </div>
-                <div className="stat-content">
-                  <span className="stat-value">
-                    {valueStats.recentValue?.label || '--'}
-                  </span>
-                  <span className="stat-label">Giá trị gần nhất</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Charts Row */}
-          <div className="row g-3">
-            {/* Bar Chart */}
-            <div className="col-12 col-lg-7">
-              <div className="chart-card">
-                <h3 className="chart-title">
-                  <i className="bi bi-bar-chart-fill me-2"></i>
-                  Biểu đồ giá trị đã thực hành
-                </h3>
-                {valueStats.totalJournals > 0 ? (
-                  <div className="chart-container">
-                    <ResponsiveContainer width="100%" height={280}>
-                      <BarChart data={valueStats.chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e9ecef" />
-                        <XAxis 
-                          dataKey="name" 
-                          tick={{ fill: '#666', fontSize: 12 }}
-                          axisLine={{ stroke: '#dee2e6' }}
-                        />
-                        <YAxis 
-                          allowDecimals={false}
-                          tick={{ fill: '#666', fontSize: 12 }}
-                          axisLine={{ stroke: '#dee2e6' }}
-                        />
-                        <Tooltip 
-                          formatter={(value) => [value, 'Số lần']}
-                          contentStyle={{ 
-                            borderRadius: '12px', 
-                            border: 'none',
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                          }}
-                        />
-                        <Bar 
-                          dataKey="value" 
-                          radius={[8, 8, 0, 0]}
-                          maxBarSize={50}
-                        >
-                          {valueStats.chartData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
+                <div className="col-4">
+                  <div className="stat-card stat-emotion">
+                    <div className="stat-icon">
+                      {stats.mostCommonEmotion ? (
+                        <span>{stats.mostCommonEmotion.emoji}</span>
+                      ) : (
+                        <i className="bi bi-emoji-neutral"></i>
+                      )}
+                    </div>
+                    <div className="stat-content">
+                      <span className="stat-value">
+                        {stats.mostCommonEmotion?.emotion || '--'}
+                      </span>
+                      <span className="stat-label">Cảm xúc phổ biến nhất</span>
+                    </div>
                   </div>
-                ) : (
-                  <div className="chart-empty">
-                    <i className="bi bi-bar-chart"></i>
-                    <p>Chưa có dữ liệu nhật ký</p>
-                    <Link to="/value-journal" className="chart-empty-link">
-                      Bắt đầu viết nhật ký →
-                    </Link>
+                </div>
+                <div className="col-4">
+                  <div className="stat-card stat-streak">
+                    <div className="stat-icon">
+                      <i className="bi bi-fire"></i>
+                    </div>
+                    <div className="stat-content">
+                      <span className="stat-value">{stats.streak}</span>
+                      <span className="stat-label">Chuỗi ngày liên tiếp</span>
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
-            </div>
 
-            {/* Pie Chart */}
-            <div className="col-12 col-lg-5">
-              <div className="chart-card">
-                <h3 className="chart-title">
-                  <i className="bi bi-pie-chart-fill me-2"></i>
-                  Tỉ lệ các giá trị
-                </h3>
-                {valueStats.pieData.length > 0 ? (
-                  <div className="chart-container">
-                    <ResponsiveContainer width="100%" height={280}>
-                      <PieChart>
-                        <Pie
-                          data={valueStats.pieData}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={50}
-                          outerRadius={90}
-                          paddingAngle={3}
-                          dataKey="value"
-                        >
-                          {valueStats.pieData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip 
-                          formatter={(value) => [value, 'Số lần']}
-                          contentStyle={{ 
-                            borderRadius: '12px', 
-                            border: 'none',
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                          }}
-                        />
-                        <Legend 
-                          formatter={(value, entry: any) => (
-                            <span style={{ color: '#333', fontSize: '12px' }}>
-                              {entry.payload?.emoji} {value}
-                            </span>
-                          )}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
+              {/* Emotion Calendar */}
+              <div className="emotion-calendar-section">
+                <div className="calendar-header">
+                  <div className="calendar-title">
+                    <i className="bi bi-calendar-heart"></i>
+                    <span>Lịch theo dõi cảm xúc</span>
                   </div>
-                ) : (
-                  <div className="chart-empty">
-                    <i className="bi bi-pie-chart"></i>
-                    <p>Chưa có dữ liệu</p>
+                  <div className="calendar-nav">
+                    <button className="nav-btn" onClick={goToPreviousMonth}>
+                      <i className="bi bi-chevron-left"></i>
+                    </button>
+                    <button className="today-btn" onClick={goToToday}>
+                      Hôm nay
+                    </button>
+                    <button className="nav-btn" onClick={goToNextMonth}>
+                      <i className="bi bi-chevron-right"></i>
+                    </button>
                   </div>
-                )}
+                </div>
+
+                <div className="calendar-month-display">
+                  {MONTHS_VI[currentDate.getMonth()]} {currentDate.getFullYear()}
+                </div>
+
+                {/* Day Headers */}
+                <div className="calendar-weekdays">
+                  {DAYS_VI.map(day => (
+                    <div key={day} className="weekday-header">
+                      {day}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Calendar Grid */}
+                <div className="calendar-grid">
+                  {calendarData.map((date, index) => {
+                    if (!date) {
+                      return <div key={`empty-${index}`} className="calendar-day empty"></div>;
+                    }
+
+                    const dominantEmotion = getDominantEmotion(date);
+                    const logsForDay = getLogsForDate(date);
+                    const hasLogs = logsForDay.length > 0;
+                    const isTodayDate = isToday(date);
+                    const emotionColor = dominantEmotion 
+                      ? EMOTION_COLORS[dominantEmotion.emotionKey]
+                      : null;
+
+                    return (
+                      <button
+                        key={date.toISOString()}
+                        className={`calendar-day ${isTodayDate ? 'today' : ''} ${hasLogs ? 'has-data' : ''}`}
+                        onClick={() => handleDayClick(date)}
+                        style={emotionColor ? {
+                          backgroundColor: emotionColor.bg,
+                          color: emotionColor.text,
+                        } : undefined}
+                      >
+                        <span className="day-number">{date.getDate()}</span>
+                        {hasLogs && (
+                          <span className="day-indicator">
+                            {dominantEmotion?.emoji}
+                          </span>
+                        )}
+                        {hasLogs && logsForDay.length > 1 && (
+                          <span className="day-count">+{logsForDay.length - 1}</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Legend */}
+                <div className="calendar-legend">
+                  <span className="legend-title">Chú thích:</span>
+                  <div className="legend-items">
+                    {Object.entries(EMOTION_COLORS).map(([key, colors]) => {
+                      const emotionLabels: { [k: string]: string } = {
+                        happy: 'Vui',
+                        calm: 'Bình tĩnh',
+                        neutral: 'Bình thường',
+                        sad: 'Buồn',
+                        angry: 'Tức giận',
+                        anxious: 'Lo lắng',
+                      };
+                      return (
+                        <div key={key} className="legend-item">
+                          <span 
+                            className="legend-color"
+                            style={{ backgroundColor: colors.bg }}
+                          ></span>
+                          <span className="legend-label">{emotionLabels[key]}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Add CTA */}
+              <div className="quick-add-cta mt-4">
+                <Link to="/emotion-tracker" className="quick-add-btn">
+                  <i className="bi bi-plus-circle me-2"></i>
+                  Ghi nhận cảm xúc hôm nay
+                </Link>
               </div>
             </div>
-          </div>
+          )}
+
+          {/* GRACE Statistics Tab */}
+          {activeTab === 'grace' && (
+            <div className="tab-panel grace-tab-panel">
+              {/* Value Stats Cards */}
+              <div className="row g-3 mb-4">
+                <div className="col-4">
+                  <div className="stat-card stat-value-total">
+                    <div className="stat-icon">
+                      <i className="bi bi-journal-text"></i>
+                    </div>
+                    <div className="stat-content">
+                      <span className="stat-value">{valueStats.totalJournals}</span>
+                      <span className="stat-label">Tổng số nhật ký</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-4">
+                  <div className="stat-card stat-practiced">
+                    <div className="stat-icon">
+                      {valueStats.mostPracticed ? (
+                        <span>{valueStats.mostPracticed.emoji}</span>
+                      ) : (
+                        <i className="bi bi-star"></i>
+                      )}
+                    </div>
+                    <div className="stat-content">
+                      <span className="stat-value">
+                        {valueStats.mostPracticed?.label || '--'}
+                      </span>
+                      <span className="stat-label">Giá trị thực hành nhiều nhất</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-4">
+                  <div className="stat-card stat-recent">
+                    <div className="stat-icon">
+                      {valueStats.recentValue ? (
+                        <span>{valueStats.recentValue.emoji}</span>
+                      ) : (
+                        <i className="bi bi-clock-history"></i>
+                      )}
+                    </div>
+                    <div className="stat-content">
+                      <span className="stat-value">
+                        {valueStats.recentValue?.label || '--'}
+                      </span>
+                      <span className="stat-label">Giá trị gần nhất</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Charts Row */}
+              <div className="row g-3 mb-4">
+                {/* Bar Chart */}
+                <div className="col-12 col-lg-7">
+                  <div className="chart-card">
+                    <h3 className="chart-title">
+                      <i className="bi bi-bar-chart-fill me-2"></i>
+                      Biểu đồ giá trị GRACE
+                    </h3>
+                    {valueStats.totalJournals > 0 ? (
+                      <div className="chart-container">
+                        <ResponsiveContainer width="100%" height={280}>
+                          <BarChart data={valueStats.chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e9ecef" />
+                            <XAxis 
+                              dataKey="name" 
+                              tick={{ fill: '#666', fontSize: 12 }}
+                              axisLine={{ stroke: '#dee2e6' }}
+                            />
+                            <YAxis 
+                              allowDecimals={false}
+                              tick={{ fill: '#666', fontSize: 12 }}
+                              axisLine={{ stroke: '#dee2e6' }}
+                              label={{ value: 'Số lần thực hiện', angle: -90, position: 'insideLeft', fill: '#666', fontSize: 12 }}
+                            />
+                            <Tooltip 
+                              formatter={(value) => [value, 'Số lần']}
+                              contentStyle={{ 
+                                borderRadius: '12px', 
+                                border: 'none',
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                              }}
+                            />
+                            <Bar 
+                              dataKey="value" 
+                              radius={[8, 8, 0, 0]}
+                              maxBarSize={50}
+                            >
+                              {valueStats.chartData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    ) : (
+                      <div className="chart-empty">
+                        <i className="bi bi-bar-chart"></i>
+                        <p>Chưa có dữ liệu nhật ký</p>
+                        <Link to="/value-journal" className="chart-empty-link">
+                          Bắt đầu viết nhật ký →
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Pie Chart */}
+                <div className="col-12 col-lg-5">
+                  <div className="chart-card">
+                    <h3 className="chart-title">
+                      <i className="bi bi-pie-chart-fill me-2"></i>
+                      Tỉ lệ các giá trị
+                    </h3>
+                    {valueStats.pieData.length > 0 ? (
+                      <div className="chart-container">
+                        <ResponsiveContainer width="100%" height={280}>
+                          <PieChart>
+                            <Pie
+                              data={valueStats.pieData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={50}
+                              outerRadius={90}
+                              paddingAngle={3}
+                              dataKey="value"
+                            >
+                              {valueStats.pieData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip 
+                              formatter={(value) => [value, 'Số lần']}
+                              contentStyle={{ 
+                                borderRadius: '12px', 
+                                border: 'none',
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                              }}
+                            />
+                            <Legend 
+                              formatter={(value, entry: any) => (
+                                <span style={{ color: '#333', fontSize: '12px' }}>
+                                  {entry.payload?.emoji} {value}
+                                </span>
+                              )}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                    ) : (
+                      <div className="chart-empty">
+                        <i className="bi bi-pie-chart"></i>
+                        <p>Chưa có dữ liệu</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* GRACE Values Legend */}
+              <div className="grace-legend-card">
+                <h4 className="grace-legend-title">
+                  <i className="bi bi-info-circle me-2"></i>
+                  Giá trị GRACE
+                </h4>
+                <div className="grace-legend-items">
+                  {GRACE_VALUES.map(value => (
+                    <div key={value.key} className="grace-legend-item" style={{ borderColor: value.color }}>
+                      <span className="grace-emoji">{value.emoji}</span>
+                      <div className="grace-info">
+                        <span className="grace-label">{value.label}</span>
+                        <span className="grace-key">{value.key.charAt(0).toUpperCase()}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quick Add CTA */}
+              <div className="quick-add-cta mt-4">
+                <Link to="/value-journal" className="quick-add-btn grace-btn">
+                  <i className="bi bi-journal-plus me-2"></i>
+                  Viết nhật ký giá trị
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Feature Cards */}
-        <div className="features-section mb-4">
+        <div className="features-section mb-4 mt-4">
           <h2 className="section-title">
             <i className="bi bi-grid-3x3-gap-fill me-2"></i>
             Khám phá tính năng
