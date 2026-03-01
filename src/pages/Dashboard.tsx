@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { DashboardCard } from '../components';
 import type { EmotionLog } from './EmotionTracker';
+import type { ValueJournalEntry } from './ValueJournal';
 import './Dashboard.css';
 
 // Vietnamese month names
@@ -25,9 +27,27 @@ const EMOTION_COLORS: { [key: string]: { bg: string; text: string } } = {
 };
 
 const STORAGE_KEY = 'bridged_emotion_logs';
+const VALUE_STORAGE_KEY = 'bridged_value_journals';
+
+// GRACE Values for chart display
+type GraceValue = {
+  key: string;
+  label: string;
+  emoji: string;
+  color: string;
+};
+
+const GRACE_VALUES: GraceValue[] = [
+  { key: 'gratitude', label: 'Biết ơn', emoji: '🙏', color: '#FFD93D' },
+  { key: 'respect', label: 'Tôn trọng', emoji: '🤝', color: '#4ECDC4' },
+  { key: 'accountability', label: 'Trách nhiệm', emoji: '✊', color: '#9B59B6' },
+  { key: 'courage', label: 'Dũng cảm', emoji: '🦁', color: '#E74C3C' },
+  { key: 'engagement', label: 'Kết nối', emoji: '💫', color: '#2ECC71' },
+];
 
 const Dashboard = () => {
   const [emotionLogs, setEmotionLogs] = useState<EmotionLog[]>([]);
+  const [valueJournals, setValueJournals] = useState<ValueJournalEntry[]>([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -80,6 +100,7 @@ const Dashboard = () => {
   // Load emotion logs from localStorage
   useEffect(() => {
     loadEmotionLogs();
+    loadValueJournals();
   }, []);
 
   const loadEmotionLogs = () => {
@@ -91,6 +112,18 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error('Error loading emotion logs:', error);
+    }
+  };
+
+  const loadValueJournals = () => {
+    try {
+      const stored = localStorage.getItem(VALUE_STORAGE_KEY);
+      if (stored) {
+        const journals: ValueJournalEntry[] = JSON.parse(stored);
+        setValueJournals(journals);
+      }
+    } catch (error) {
+      console.error('Error loading value journals:', error);
     }
   };
 
@@ -222,6 +255,59 @@ const Dashboard = () => {
       streak,
     };
   }, [emotionLogs]);
+
+  // Value Journal Statistics and Chart Data
+  const valueStats = useMemo(() => {
+    // Count occurrences of each value
+    const valueCounts: { [key: string]: number } = {};
+    GRACE_VALUES.forEach(v => {
+      valueCounts[v.key] = 0;
+    });
+    
+    valueJournals.forEach(journal => {
+      if (valueCounts[journal.valueKey] !== undefined) {
+        valueCounts[journal.valueKey]++;
+      }
+    });
+
+    // Chart data for bar chart
+    const chartData = GRACE_VALUES.map(v => ({
+      name: v.label,
+      value: valueCounts[v.key],
+      emoji: v.emoji,
+      color: v.color,
+    }));
+
+    // Pie chart data (only values with count > 0)
+    const pieData = chartData.filter(d => d.value > 0);
+
+    // Get most practiced value
+    let mostPracticed: GraceValue | null = null;
+    let maxCount = 0;
+    GRACE_VALUES.forEach(v => {
+      if (valueCounts[v.key] > maxCount) {
+        maxCount = valueCounts[v.key];
+        mostPracticed = v;
+      }
+    });
+
+    // Get most recent journal
+    const recentJournal = valueJournals.length > 0
+      ? [...valueJournals].sort((a, b) => b.timestamp - a.timestamp)[0]
+      : null;
+    
+    const recentValue = recentJournal 
+      ? GRACE_VALUES.find(v => v.key === recentJournal.valueKey) || null
+      : null;
+
+    return {
+      totalJournals: valueJournals.length,
+      mostPracticed: mostPracticed as GraceValue | null,
+      recentValue: recentValue as GraceValue | null,
+      chartData,
+      pieData,
+    };
+  }, [valueJournals]);
 
   // Format date for display
   const formatDateFull = (date: Date) => {
@@ -391,6 +477,173 @@ const Dashboard = () => {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        </div>
+
+        {/* Value Journal Section */}
+        <div className="value-journal-section mb-4">
+          <div className="section-header">
+            <h2 className="section-title">
+              <i className="bi bi-journal-richtext me-2"></i>
+              Thống kê giá trị GRACE
+            </h2>
+          </div>
+
+          {/* Value Stats Cards */}
+          <div className="row g-3 mb-4">
+            <div className="col-4">
+              <div className="stat-card stat-value-total">
+                <div className="stat-icon">
+                  <i className="bi bi-journal-text"></i>
+                </div>
+                <div className="stat-content">
+                  <span className="stat-value">{valueStats.totalJournals}</span>
+                  <span className="stat-label">Tổng số nhật ký</span>
+                </div>
+              </div>
+            </div>
+            <div className="col-4">
+              <div className="stat-card stat-practiced">
+                <div className="stat-icon">
+                  {valueStats.mostPracticed ? (
+                    <span>{valueStats.mostPracticed.emoji}</span>
+                  ) : (
+                    <i className="bi bi-star"></i>
+                  )}
+                </div>
+                <div className="stat-content">
+                  <span className="stat-value">
+                    {valueStats.mostPracticed?.label || '--'}
+                  </span>
+                  <span className="stat-label">Giá trị thực hành nhiều nhất</span>
+                </div>
+              </div>
+            </div>
+            <div className="col-4">
+              <div className="stat-card stat-recent">
+                <div className="stat-icon">
+                  {valueStats.recentValue ? (
+                    <span>{valueStats.recentValue.emoji}</span>
+                  ) : (
+                    <i className="bi bi-clock-history"></i>
+                  )}
+                </div>
+                <div className="stat-content">
+                  <span className="stat-value">
+                    {valueStats.recentValue?.label || '--'}
+                  </span>
+                  <span className="stat-label">Giá trị gần nhất</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Charts Row */}
+          <div className="row g-3">
+            {/* Bar Chart */}
+            <div className="col-12 col-lg-7">
+              <div className="chart-card">
+                <h3 className="chart-title">
+                  <i className="bi bi-bar-chart-fill me-2"></i>
+                  Biểu đồ giá trị đã thực hành
+                </h3>
+                {valueStats.totalJournals > 0 ? (
+                  <div className="chart-container">
+                    <ResponsiveContainer width="100%" height={280}>
+                      <BarChart data={valueStats.chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e9ecef" />
+                        <XAxis 
+                          dataKey="name" 
+                          tick={{ fill: '#666', fontSize: 12 }}
+                          axisLine={{ stroke: '#dee2e6' }}
+                        />
+                        <YAxis 
+                          allowDecimals={false}
+                          tick={{ fill: '#666', fontSize: 12 }}
+                          axisLine={{ stroke: '#dee2e6' }}
+                        />
+                        <Tooltip 
+                          formatter={(value) => [value, 'Số lần']}
+                          contentStyle={{ 
+                            borderRadius: '12px', 
+                            border: 'none',
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                          }}
+                        />
+                        <Bar 
+                          dataKey="value" 
+                          radius={[8, 8, 0, 0]}
+                          maxBarSize={50}
+                        >
+                          {valueStats.chartData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                ) : (
+                  <div className="chart-empty">
+                    <i className="bi bi-bar-chart"></i>
+                    <p>Chưa có dữ liệu nhật ký</p>
+                    <Link to="/value-journal" className="chart-empty-link">
+                      Bắt đầu viết nhật ký →
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Pie Chart */}
+            <div className="col-12 col-lg-5">
+              <div className="chart-card">
+                <h3 className="chart-title">
+                  <i className="bi bi-pie-chart-fill me-2"></i>
+                  Tỉ lệ các giá trị
+                </h3>
+                {valueStats.pieData.length > 0 ? (
+                  <div className="chart-container">
+                    <ResponsiveContainer width="100%" height={280}>
+                      <PieChart>
+                        <Pie
+                          data={valueStats.pieData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={50}
+                          outerRadius={90}
+                          paddingAngle={3}
+                          dataKey="value"
+                        >
+                          {valueStats.pieData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip 
+                          formatter={(value) => [value, 'Số lần']}
+                          contentStyle={{ 
+                            borderRadius: '12px', 
+                            border: 'none',
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                          }}
+                        />
+                        <Legend 
+                          formatter={(value, entry: any) => (
+                            <span style={{ color: '#333', fontSize: '12px' }}>
+                              {entry.payload?.emoji} {value}
+                            </span>
+                          )}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                ) : (
+                  <div className="chart-empty">
+                    <i className="bi bi-pie-chart"></i>
+                    <p>Chưa có dữ liệu</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

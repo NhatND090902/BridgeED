@@ -819,3 +819,153 @@
     font-size: 0.95rem;
   }
 }
+
+/* ===========================
+   Value Journal Section
+   =========================== */
+.value-journal-section {
+  margin-top: 1rem;
+}
+
+.section-header {
+  margin-bottom: 1rem;
+}
+
+/* Additional stat card styles for value journal */
+.stat-value-total .stat-icon {
+  background: linear-gradient(135deg, #45B7D1 0%, #2196F3 100%);
+  color: white;
+}
+
+.stat-practiced .stat-icon {
+  background: linear-gradient(135deg, #FFD93D 0%, #F9A825 100%);
+  color: white;
+  font-size: 1.75rem;
+}
+
+.stat-recent .stat-icon {
+  background: linear-gradient(135deg, #2ECC71 0%, #27ae60 100%);
+  color: white;
+  font-size: 1.75rem;
+}
+
+/* Chart Card */
+.chart-card {
+  background: white;
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  height: 100%;
+}
+
+.chart-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.chart-title i {
+  color: #45B7D1;
+}
+
+.chart-container {
+  width: 100%;
+  min-height: 280px;
+}
+
+/* Chart Empty State */
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #adb5bd;
+}
+
+.chart-empty i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.chart-empty p {
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.chart-empty-link {
+  color: #45B7D1;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.chart-empty-link:hover {
+  color: #2196F3;
+}
+
+/* Recharts Tooltip Override */
+.recharts-tooltip-wrapper {
+  z-index: 100;
+}
+
+/* Responsive Chart */
+@media (max-width: 991px) {
+  .chart-card {
+    margin-bottom: 0;
+  }
+
+  .chart-container {
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chart-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+
+  .chart-title {
+    font-size: 0.9rem;
+  }
+
+  .chart-container {
+    min-height: 220px;
+  }
+
+  .chart-empty {
+    padding: 2rem 1rem;
+  }
+
+  .chart-empty i {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-card {
+    padding: 1rem;
+  }
+
+  .chart-container {
+    min-height: 200px;
+  }
+
+  .chart-empty {
+    padding: 1.5rem 1rem;
+  }
+
+  .chart-empty i {
+    font-size: 2rem;
+  }
+
+  .chart-empty p {
+    font-size: 0.9rem;
+  }
+}

@@ -3,6 +3,7 @@ export { default as EmotionTracker } from './EmotionTracker';
 export type { EmotionLog } from './EmotionTracker';
 export { default as GraceModule } from './GraceModule';
 export { default as ValueJournal } from './ValueJournal';
+export type { ValueJournalEntry } from './ValueJournal';
 export { default as GraceLibrary } from './GraceLibrary';
 export { default as AnonymousChat } from './AnonymousChat';
 export { default as About } from './About';
