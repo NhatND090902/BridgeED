@@ -1,5 +1,6 @@
 import React from 'react';
 import ProgressBar from './ProgressBar';
+import type { BadgeData } from './BadgeIcon';
 
 export interface LibraryCardData {
   id: number;
@@ -14,12 +15,14 @@ export interface LibraryCardData {
 interface LibraryCardProps {
   card: LibraryCardData;
   completedTasks: boolean[];
+  badge?: BadgeData | null;
   onClick: () => void;
 }
 
 const LibraryCard: React.FC<LibraryCardProps> = ({
   card,
   completedTasks,
+  badge,
   onClick,
 }) => {
   const completedCount = completedTasks.filter(Boolean).length;
@@ -28,10 +31,18 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
 
   return (
     <div
-      className="library-card"
+      className={`library-card ${badge ? 'has-badge' : ''}`}
       onClick={onClick}
       style={{ '--card-color': card.color } as React.CSSProperties}
     >
+      {/* Badge earned indicator */}
+      {badge && (
+        <div className="card-badge-earned" style={{ background: card.gradient }}>
+          <i className={`bi ${badge.icon}`}></i>
+          <span className="badge-earned-label">Đã nhận huy hiệu!</span>
+        </div>
+      )}
+
       <div className="card-icon-wrapper" style={{ background: card.gradient }}>
         <i className={`bi ${card.icon}`}></i>
       </div>
@@ -57,10 +68,14 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
       </div>
       <div className="card-decoration" style={{ background: card.gradient }}></div>
       
-      {/* Progress badge */}
+      {/* Completion badge */}
       {progress === 100 && (
         <div className="completion-badge" style={{ background: card.gradient }}>
-          <i className="bi bi-check-lg"></i>
+          {badge ? (
+            <i className={`bi ${badge.icon}`}></i>
+          ) : (
+            <i className="bi bi-check-lg"></i>
+          )}
         </div>
       )}
     </div>

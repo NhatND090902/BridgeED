@@ -1,10 +1,12 @@
 import React from 'react';
 import ProgressBar from './ProgressBar';
 import type { LibraryCardData } from './LibraryCard';
+import type { BadgeData } from './BadgeIcon';
 
 interface LibraryModalProps {
   card: LibraryCardData;
   completedTasks: boolean[];
+  badge?: BadgeData | null;
   onClose: () => void;
   onToggleTask: (taskIndex: number) => void;
 }
@@ -12,6 +14,7 @@ interface LibraryModalProps {
 const LibraryModal: React.FC<LibraryModalProps> = ({
   card,
   completedTasks,
+  badge,
   onClose,
   onToggleTask,
 }) => {
@@ -42,6 +45,30 @@ const LibraryModal: React.FC<LibraryModalProps> = ({
         {/* Modal Body */}
         <div className="modal-body-custom">
           <p className="modal-description">{card.description}</p>
+
+          {/* Badge display if earned */}
+          {badge && (
+            <div className="modal-badge-section mb-4">
+              <div className="modal-badge-card" style={{ background: `${card.color}10` }}>
+                <div className="modal-badge-icon" style={{ background: card.gradient }}>
+                  <i className={`bi ${badge.icon}`}></i>
+                </div>
+                <div className="modal-badge-info">
+                  <div className="modal-badge-label">
+                    <i className="bi bi-patch-check-fill me-1" style={{ color: card.color }}></i>
+                    Huy hiệu đã nhận
+                  </div>
+                  <h5 className="modal-badge-name" style={{ color: card.color }}>
+                    {badge.name} {badge.emoji}
+                  </h5>
+                  <small className="text-muted">
+                    <i className="bi bi-calendar-check me-1"></i>
+                    Đạt được ngày {badge.earnedDate}
+                  </small>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Progress in modal */}
           <div className="modal-progress-section mb-4">
@@ -101,18 +128,25 @@ const LibraryModal: React.FC<LibraryModalProps> = ({
             ))}
           </div>
 
-          {/* Completion message */}
+          {/* Completion message with badge */}
           {progress === 100 && (
             <div className="completion-message mt-4" style={{ background: `${card.color}15` }}>
               <div className="completion-icon" style={{ background: card.gradient }}>
-                <i className="bi bi-trophy-fill"></i>
+                {badge ? (
+                  <i className={`bi ${badge.icon}`}></i>
+                ) : (
+                  <i className="bi bi-trophy-fill"></i>
+                )}
               </div>
               <div>
                 <h6 className="mb-1 fw-bold" style={{ color: card.color }}>
-                  Hoàn thành xuất sắc! 🎉
+                  {badge ? `${badge.emoji} Hoàn thành xuất sắc!` : 'Hoàn thành xuất sắc! 🎉'}
                 </h6>
                 <p className="mb-0 small text-muted">
-                  Bạn đã hoàn thành tất cả nhiệm vụ trong danh mục này!
+                  {badge 
+                    ? `Bạn đã nhận huy hiệu "${badge.name}" cho danh mục này!`
+                    : 'Bạn đã hoàn thành tất cả nhiệm vụ trong danh mục này!'
+                  }
                 </p>
               </div>
             </div>

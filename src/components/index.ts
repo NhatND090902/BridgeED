@@ -4,4 +4,7 @@ export { default as ProgressBar } from './ProgressBar';
 export { default as FireworksEffect } from './FireworksEffect';
 export { default as LibraryCard } from './LibraryCard';
 export { default as LibraryModal } from './LibraryModal';
+export { default as BadgeIcon, getRandomBadgeIcon, BADGE_ICONS } from './BadgeIcon';
+export { default as BadgeAnimation } from './BadgeAnimation';
 export type { LibraryCardData } from './LibraryCard';
+export type { BadgeData } from './BadgeIcon';

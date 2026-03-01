@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { LibraryCard, LibraryModal, FireworksEffect, ProgressBar } from '../components';
-import type { LibraryCardData } from '../components';
+import { LibraryCard, LibraryModal, FireworksEffect, ProgressBar, BadgeAnimation, getRandomBadgeIcon } from '../components';
+import type { LibraryCardData, BadgeData } from '../components';
 import './GraceLibrary.css';
 
 // Types for progress tracking
@@ -8,8 +8,13 @@ interface ProgressData {
   [cardId: number]: boolean[];
 }
 
+interface BadgesData {
+  [cardId: number]: BadgeData;
+}
+
 interface StoredProgress {
   data: ProgressData;
+  badges: BadgesData;
   lastUpdated: string;
 }
 
@@ -19,9 +24,12 @@ const GraceLibrary = () => {
   const [selectedCard, setSelectedCard] = useState<LibraryCardData | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [progress, setProgress] = useState<ProgressData>({});
+  const [badges, setBadges] = useState<BadgesData>({});
   const [showFireworks, setShowFireworks] = useState(false);
   const [fireworksMessage, setFireworksMessage] = useState('');
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showBadgeAnimation, setShowBadgeAnimation] = useState(false);
+  const [newBadge, setNewBadge] = useState<BadgeData | null>(null);
 
   const libraryCards: LibraryCardData[] = [
     {
@@ -147,6 +155,7 @@ const GraceLibrary = () => {
           }
           
           setProgress(parsedData.data);
+          setBadges(parsedData.badges || {});
         } else {
           initializeProgress();
         }
@@ -165,13 +174,15 @@ const GraceLibrary = () => {
       initialProgress[card.id] = new Array(card.content.length).fill(false);
     });
     setProgress(initialProgress);
-    saveProgress(initialProgress);
+    setBadges({});
+    saveProgress(initialProgress, {});
   }, []);
 
   // Save progress to localStorage
-  const saveProgress = (data: ProgressData) => {
+  const saveProgress = (data: ProgressData, badgesData?: BadgesData) => {
     const storageData: StoredProgress = {
       data,
+      badges: badgesData !== undefined ? badgesData : badges,
       lastUpdated: new Date().toDateString(),
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(storageData));
@@ -215,7 +226,6 @@ const GraceLibrary = () => {
     };
 
     setProgress(newProgress);
-    saveProgress(newProgress);
 
     // Calculate new progress percentage
     const newCompletedCount = newCardProgress.filter(Boolean).length;
@@ -230,13 +240,34 @@ const GraceLibrary = () => {
       setShowFireworks(true);
     }
 
-    // Check if 100% completed
-    if (!wasCompleted && newPercentage === 100) {
+    // Check if 100% completed - Award badge
+    if (!wasCompleted && newPercentage === 100 && !badges[cardId]) {
       const card = libraryCards.find((c) => c.id === cardId);
-      setFireworksMessage(
-        `Xuất sắc! Bạn đã hoàn thành tất cả nhiệm vụ trong "${card?.title}". Bạn thật tuyệt vời!`
-      );
-      setShowFireworks(true);
+      
+      // Generate random badge
+      const randomBadge = getRandomBadgeIcon();
+      const earnedBadge: BadgeData = {
+        cardId,
+        icon: randomBadge.icon,
+        name: randomBadge.name,
+        emoji: randomBadge.emoji,
+        title: card?.title || '',
+        earnedDate: new Date().toLocaleDateString('vi-VN'),
+      };
+
+      // Update badges state
+      const newBadges = {
+        ...badges,
+        [cardId]: earnedBadge,
+      };
+      setBadges(newBadges);
+      saveProgress(newProgress, newBadges);
+
+      // Show badge animation
+      setNewBadge(earnedBadge);
+      setShowBadgeAnimation(true);
+    } else {
+      saveProgress(newProgress);
     }
   };
 
@@ -261,6 +292,8 @@ const GraceLibrary = () => {
   };
 
   const overall = calculateOverallProgress();
+  const earnedBadgesCount = Object.keys(badges).length;
+  const earnedBadgesList = Object.values(badges);
 
   return (
     <div className="grace-library-container">
@@ -270,6 +303,17 @@ const GraceLibrary = () => {
         message={fireworksMessage}
         onComplete={() => setShowFireworks(false)}
         duration={4000}
+      />
+
+      {/* Badge Animation */}
+      <BadgeAnimation
+        show={showBadgeAnimation}
+        badge={newBadge}
+        onComplete={() => {
+          setShowBadgeAnimation(false);
+          setNewBadge(null);
+        }}
+        duration={5000}
       />
 
       {/* Header Section */}
@@ -288,6 +332,41 @@ const GraceLibrary = () => {
           </div>
         </div>
       </div>
+
+      {/* Badge Collection Section */}
+      {earnedBadgesCount > 0 && (
+        <div className="container">
+          <div className="badge-collection-section">
+            <div className="badge-collection-header">
+              <div className="d-flex align-items-center">
+                <div className="badge-collection-icon">
+                  <i className="bi bi-collection-fill"></i>
+                </div>
+                <div className="ms-3">
+                  <h4 className="mb-0 fw-bold">Bộ sưu tập huy hiệu</h4>
+                  <p className="text-muted mb-0 small">
+                    Bạn đã nhận được {earnedBadgesCount} / {libraryCards.length} huy hiệu
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="badge-collection-list">
+              {earnedBadgesList.map((badge) => (
+                <div key={badge.cardId} className="badge-collection-item">
+                  <div className="badge-item-icon">
+                    <i className={`bi ${badge.icon}`}></i>
+                    <span className="badge-item-emoji">{badge.emoji}</span>
+                  </div>
+                  <div className="badge-item-info">
+                    <span className="badge-item-name">{badge.name}</span>
+                    <small className="badge-item-title">{badge.title}</small>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Overall Progress Section */}
       <div className="container">
@@ -347,6 +426,7 @@ const GraceLibrary = () => {
               <LibraryCard
                 card={card}
                 completedTasks={progress[card.id] || []}
+                badge={badges[card.id] || null}
                 onClick={() => openModal(card)}
               />
             </div>
@@ -367,8 +447,8 @@ const GraceLibrary = () => {
             </div>
             <div className="col-12 col-md-4 text-md-end mt-3 mt-md-0">
               <div className="banner-stats">
-                <span className="stat-number">{overall.completedTasks}</span>
-                <span className="stat-label">Đã hoàn thành</span>
+                <span className="stat-number">{earnedBadgesCount}</span>
+                <span className="stat-label">Huy hiệu</span>
               </div>
             </div>
           </div>
@@ -380,6 +460,7 @@ const GraceLibrary = () => {
         <LibraryModal
           card={selectedCard}
           completedTasks={progress[selectedCard.id] || []}
+          badge={badges[selectedCard.id] || null}
           onClose={closeModal}
           onToggleTask={(taskIndex) => handleToggleTask(selectedCard.id, taskIndex)}
         />
@@ -394,8 +475,14 @@ const GraceLibrary = () => {
             </div>
             <h4 className="fw-bold mb-2">Xác nhận đặt lại</h4>
             <p className="text-muted mb-4">
-              Bạn có chắc chắn muốn đặt lại tất cả tiến độ? Hành động này không thể hoàn tác.
+              Bạn có chắc chắn muốn đặt lại tất cả tiến độ và huy hiệu? Hành động này không thể hoàn tác.
             </p>
+            {earnedBadgesCount > 0 && (
+              <div className="reset-warning mb-3">
+                <i className="bi bi-exclamation-circle me-2"></i>
+                Bạn sẽ mất {earnedBadgesCount} huy hiệu đã nhận được!
+              </div>
+            )}
             <div className="d-flex gap-3 justify-content-center">
               <button
                 className="btn btn-secondary px-4"
