@@ -1,5 +1,6 @@
 export { default as Dashboard } from './Dashboard';
 export { default as EmotionTracker } from './EmotionTracker';
+export type { EmotionLog } from './EmotionTracker';
 export { default as GraceModule } from './GraceModule';
 export { default as ValueJournal } from './ValueJournal';
 export { default as GraceLibrary } from './GraceLibrary';

@@ -1,168 +1,286 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import './EmotionTracker.css';
+
+// Emotion data interface
+export interface EmotionLog {
+  id: string;
+  emotion: string;
+  emotionKey: string;
+  icon: string;
+  emoji: string;
+  color: string;
+  level: number;
+  levelLabel: string;
+  note: string;
+  date: string;
+  timestamp: number;
+}
+
+// Emotion options with Vietnamese labels
+const EMOTIONS = [
+  { key: 'happy', label: 'Vui', emoji: '😊', icon: 'bi-emoji-smile-fill', color: '#4CAF50' },
+  { key: 'calm', label: 'Bình tĩnh', emoji: '😌', icon: 'bi-emoji-sunglasses-fill', color: '#2196F3' },
+  { key: 'neutral', label: 'Bình thường', emoji: '😐', icon: 'bi-emoji-neutral-fill', color: '#9E9E9E' },
+  { key: 'sad', label: 'Buồn', emoji: '😢', icon: 'bi-emoji-frown-fill', color: '#9C27B0' },
+  { key: 'angry', label: 'Tức giận', emoji: '😠', icon: 'bi-emoji-angry-fill', color: '#F44336' },
+  { key: 'anxious', label: 'Lo lắng', emoji: '😰', icon: 'bi-emoji-dizzy-fill', color: '#FF9800' },
+];
+
+// Level options with Vietnamese labels
+const LEVELS = [
+  { value: 1, label: 'Rất thấp' },
+  { value: 2, label: 'Thấp' },
+  { value: 3, label: 'Trung bình' },
+  { value: 4, label: 'Cao' },
+  { value: 5, label: 'Rất cao' },
+];
+
+const STORAGE_KEY = 'bridged_emotion_logs';
 
 const EmotionTracker = () => {
-  const [selectedEmotion, setSelectedEmotion] = useState('');
-  const [intensity, setIntensity] = useState(5);
-  const [note, setNote] = useState('');
+  const [selectedEmotion, setSelectedEmotion] = useState<string>('');
+  const [level, setLevel] = useState<number>(3);
+  const [note, setNote] = useState<string>('');
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [recentLogs, setRecentLogs] = useState<EmotionLog[]>([]);
 
-  const emotions = [
-    { name: 'Happy', icon: 'bi-emoji-smile', color: '#FFD93D' },
-    { name: 'Sad', icon: 'bi-emoji-frown', color: '#6C9BCF' },
-    { name: 'Anxious', icon: 'bi-emoji-dizzy', color: '#FF8B8B' },
-    { name: 'Calm', icon: 'bi-emoji-neutral', color: '#98D8AA' },
-    { name: 'Angry', icon: 'bi-emoji-angry', color: '#FF6B6B' },
-    { name: 'Excited', icon: 'bi-emoji-laughing', color: '#FF9F45' },
-    { name: 'Tired', icon: 'bi-emoji-expressionless', color: '#B4B4B4' },
-    { name: 'Grateful', icon: 'bi-emoji-heart-eyes', color: '#FF78C4' },
-  ];
+  // Load recent logs on mount
+  useEffect(() => {
+    loadRecentLogs();
+  }, []);
+
+  const loadRecentLogs = () => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const logs: EmotionLog[] = JSON.parse(stored);
+        // Get last 5 logs sorted by timestamp descending
+        const sorted = logs.sort((a, b) => b.timestamp - a.timestamp).slice(0, 5);
+        setRecentLogs(sorted);
+      }
+    } catch (error) {
+      console.error('Error loading emotion logs:', error);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Emotion logged: ${selectedEmotion} (Intensity: ${intensity})`);
-    setSelectedEmotion('');
-    setIntensity(5);
-    setNote('');
+    
+    if (!selectedEmotion) return;
+
+    const emotion = EMOTIONS.find(em => em.key === selectedEmotion);
+    const levelData = LEVELS.find(l => l.value === level);
+    
+    if (!emotion || !levelData) return;
+
+    const newLog: EmotionLog = {
+      id: `emotion_${Date.now()}`,
+      emotion: emotion.label,
+      emotionKey: emotion.key,
+      icon: emotion.icon,
+      emoji: emotion.emoji,
+      color: emotion.color,
+      level: level,
+      levelLabel: levelData.label,
+      note: note.trim(),
+      date: new Date().toISOString().split('T')[0],
+      timestamp: Date.now(),
+    };
+
+    // Save to localStorage
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      const logs: EmotionLog[] = stored ? JSON.parse(stored) : [];
+      logs.push(newLog);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+      
+      // Show success message
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+      
+      // Reset form
+      setSelectedEmotion('');
+      setLevel(3);
+      setNote('');
+      
+      // Reload recent logs
+      loadRecentLogs();
+    } catch (error) {
+      console.error('Error saving emotion log:', error);
+    }
+  };
+
+  const getSelectedEmotionData = () => {
+    return EMOTIONS.find(em => em.key === selectedEmotion);
+  };
+
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   return (
-    <div className="container py-5">
-      <div className="row justify-content-center">
-        <div className="col-12 col-lg-8">
-          {/* Header */}
-          <div className="text-center mb-5">
-            <h1 className="fw-bold text-primary mb-3">
-              <i className="bi bi-emoji-smile me-2"></i>
-              Emotion Tracker
-            </h1>
-            <p className="text-muted">
-              How are you feeling right now? Select an emotion and log your current state.
-            </p>
-          </div>
+    <div className="emotion-tracker-page">
+      <div className="container py-4">
+        <div className="row justify-content-center">
+          <div className="col-12 col-lg-8">
+            {/* Header */}
+            <div className="emotion-tracker-header text-center mb-4">
+              <div className="header-icon-wrapper">
+                <i className="bi bi-emoji-smile-fill"></i>
+              </div>
+              <h1 className="fw-bold mb-2">Theo Dõi Cảm Xúc</h1>
+              <p className="text-muted mb-0">
+                Ghi lại cảm xúc của bạn mỗi ngày để hiểu rõ hơn về bản thân
+              </p>
+            </div>
 
-          {/* Emotion Selection */}
-          <div className="card border-0 shadow-sm mb-4">
-            <div className="card-body p-4">
-              <h5 className="fw-bold mb-4">
-                <i className="bi bi-heart me-2"></i>
-                Select Your Emotion
-              </h5>
-              <div className="row g-3">
-                {emotions.map((emotion) => (
-                  <div className="col-6 col-sm-4 col-md-3" key={emotion.name}>
-                    <button
-                      type="button"
-                      className={`btn w-100 py-3 ${
-                        selectedEmotion === emotion.name
-                          ? 'btn-primary'
-                          : 'btn-outline-secondary'
-                      }`}
-                      onClick={() => setSelectedEmotion(emotion.name)}
-                    >
-                      <i
-                        className={`bi ${emotion.icon} fs-3 d-block mb-2`}
-                        style={{
-                          color: selectedEmotion === emotion.name ? 'white' : emotion.color,
-                        }}
-                      ></i>
-                      <small>{emotion.name}</small>
-                    </button>
-                  </div>
+            {/* Success Message */}
+            {showSuccess && (
+              <div className="success-message animate__animated animate__fadeInDown">
+                <div className="success-content">
+                  <i className="bi bi-check-circle-fill"></i>
+                  <span>Đã lưu cảm xúc thành công!</span>
+                </div>
+              </div>
+            )}
+
+            {/* Emotion Selection */}
+            <div className="emotion-card mb-4">
+              <div className="card-header-custom">
+                <i className="bi bi-heart-fill"></i>
+                <span>Chọn cảm xúc của bạn</span>
+              </div>
+              <div className="emotion-grid">
+                {EMOTIONS.map((emotion) => (
+                  <button
+                    key={emotion.key}
+                    type="button"
+                    className={`emotion-btn ${selectedEmotion === emotion.key ? 'active' : ''}`}
+                    onClick={() => setSelectedEmotion(emotion.key)}
+                    style={{
+                      '--emotion-color': emotion.color,
+                    } as React.CSSProperties}
+                  >
+                    <div className="emotion-icon-wrapper" style={{ backgroundColor: emotion.color }}>
+                      <i className={`bi ${emotion.icon}`}></i>
+                    </div>
+                    <span className="emotion-emoji">{emotion.emoji}</span>
+                    <span className="emotion-label">{emotion.label}</span>
+                    {selectedEmotion === emotion.key && (
+                      <div className="emotion-check">
+                        <i className="bi bi-check-lg"></i>
+                      </div>
+                    )}
+                  </button>
                 ))}
               </div>
             </div>
-          </div>
 
-          {/* Intensity Slider */}
-          <div className="card border-0 shadow-sm mb-4">
-            <div className="card-body p-4">
-              <h5 className="fw-bold mb-4">
-                <i className="bi bi-speedometer2 me-2"></i>
-                Intensity Level
-              </h5>
-              <div className="px-3">
-                <input
-                  type="range"
-                  className="form-range"
-                  min="1"
-                  max="10"
-                  value={intensity}
-                  onChange={(e) => setIntensity(Number(e.target.value))}
-                />
-                <div className="d-flex justify-content-between text-muted small">
-                  <span>Low (1)</span>
-                  <span className="fw-bold text-primary fs-5">{intensity}</span>
-                  <span>High (10)</span>
+            {/* Level Selection */}
+            <div className="emotion-card mb-4">
+              <div className="card-header-custom">
+                <i className="bi bi-speedometer2"></i>
+                <span>Mức độ cảm xúc</span>
+              </div>
+              <div className="level-selector">
+                {LEVELS.map((levelOption) => (
+                  <button
+                    key={levelOption.value}
+                    type="button"
+                    className={`level-btn ${level === levelOption.value ? 'active' : ''}`}
+                    onClick={() => setLevel(levelOption.value)}
+                  >
+                    <span className="level-number">{levelOption.value}</span>
+                    <span className="level-label">{levelOption.label}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="level-indicator">
+                <div className="level-progress">
+                  <div 
+                    className="level-progress-fill"
+                    style={{ width: `${(level / 5) * 100}%` }}
+                  ></div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Notes */}
-          <div className="card border-0 shadow-sm mb-4">
-            <div className="card-body p-4">
-              <h5 className="fw-bold mb-4">
-                <i className="bi bi-pencil me-2"></i>
-                Add Notes (Optional)
-              </h5>
+            {/* Note Field */}
+            <div className="emotion-card mb-4">
+              <div className="card-header-custom">
+                <i className="bi bi-pencil-fill"></i>
+                <span>Ghi chú</span>
+                <span className="optional-badge">Tùy chọn</span>
+              </div>
               <textarea
-                className="form-control"
+                className="note-textarea"
                 rows={4}
-                placeholder="What triggered this emotion? Any thoughts you want to record..."
+                placeholder="Viết mô tả ngắn về cảm xúc hoặc điều đã xảy ra..."
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
               ></textarea>
             </div>
-          </div>
 
-          {/* Submit Button */}
-          <div className="d-grid">
+            {/* Submit Button */}
             <button
               type="submit"
-              className="btn btn-primary btn-lg"
+              className="submit-btn"
               onClick={handleSubmit}
               disabled={!selectedEmotion}
             >
-              <i className="bi bi-check-circle me-2"></i>
-              Log Emotion
+              <i className="bi bi-check-circle-fill me-2"></i>
+              Lưu cảm xúc
+              {getSelectedEmotionData() && (
+                <span className="selected-preview">
+                  {getSelectedEmotionData()?.emoji}
+                </span>
+              )}
             </button>
-          </div>
 
-          {/* Recent Entries Preview */}
-          <div className="card border-0 shadow-sm mt-5">
-            <div className="card-header bg-white border-0 py-3">
-              <h5 className="fw-bold mb-0">
-                <i className="bi bi-clock-history me-2"></i>
-                Recent Entries
-              </h5>
-            </div>
-            <div className="card-body p-0">
-              <div className="list-group list-group-flush">
-                <div className="list-group-item d-flex justify-content-between align-items-center py-3">
-                  <div>
-                    <i className="bi bi-emoji-smile text-warning fs-5 me-2"></i>
-                    <span className="fw-semibold">Happy</span>
-                    <span className="text-muted ms-2">- Completed a project</span>
-                  </div>
-                  <span className="badge bg-primary rounded-pill">8/10</span>
+            {/* Recent Entries */}
+            {recentLogs.length > 0 && (
+              <div className="emotion-card mt-4">
+                <div className="card-header-custom">
+                  <i className="bi bi-clock-history"></i>
+                  <span>Lịch sử gần đây</span>
                 </div>
-                <div className="list-group-item d-flex justify-content-between align-items-center py-3">
-                  <div>
-                    <i className="bi bi-emoji-neutral text-success fs-5 me-2"></i>
-                    <span className="fw-semibold">Calm</span>
-                    <span className="text-muted ms-2">- Morning meditation</span>
-                  </div>
-                  <span className="badge bg-primary rounded-pill">6/10</span>
-                </div>
-                <div className="list-group-item d-flex justify-content-between align-items-center py-3">
-                  <div>
-                    <i className="bi bi-emoji-heart-eyes text-pink fs-5 me-2"></i>
-                    <span className="fw-semibold">Grateful</span>
-                    <span className="text-muted ms-2">- Family time</span>
-                  </div>
-                  <span className="badge bg-primary rounded-pill">9/10</span>
+                <div className="recent-entries-list">
+                  {recentLogs.map((log) => (
+                    <div key={log.id} className="recent-entry-item">
+                      <div 
+                        className="entry-icon"
+                        style={{ backgroundColor: log.color }}
+                      >
+                        <i className={`bi ${log.icon}`}></i>
+                      </div>
+                      <div className="entry-content">
+                        <div className="entry-header">
+                          <span className="entry-emotion">
+                            {log.emoji} {log.emotion}
+                          </span>
+                          <span className="entry-level">
+                            Mức {log.level}
+                          </span>
+                        </div>
+                        {log.note && (
+                          <p className="entry-note">{log.note}</p>
+                        )}
+                        <span className="entry-date">
+                          {formatDate(log.timestamp)}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

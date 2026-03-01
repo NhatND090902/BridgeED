@@ -7,8 +7,8 @@ const Navbar = () => {
   const navLinks = [
     { to: '/', label: 'Dashboard', icon: 'bi-speedometer2' },
     { to: '/emotion-tracker', label: 'Emotion Tracker', icon: 'bi-emoji-smile' },
-    { to: '/grace-module', label: 'GRACE Module', icon: 'bi-flower1' },
     { to: '/value-journal', label: 'Value Journal', icon: 'bi-journal-text' },
+    { to: '/grace-module', label: 'GRACE Module', icon: 'bi-flower1' },
     { to: '/grace-library', label: 'GRACE Library', icon: 'bi-book' },
     { to: '/anonymous-chat', label: 'Anonymous Chat', icon: 'bi-chat-dots' },
     { to: '/about', label: 'About BridgeED', icon: 'bi-info-circle' },
