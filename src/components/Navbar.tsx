@@ -11,7 +11,7 @@ const Navbar = () => {
     { to: '/value-journal', label: 'Value Journal', icon: 'bi-journal-text' },
     { to: '/grace-library', label: 'GRACE Library', icon: 'bi-book' },
     { to: '/anonymous-chat', label: 'Anonymous Chat', icon: 'bi-chat-dots' },
-    { to: '/about', label: 'About Us', icon: 'bi-info-circle' },
+    { to: '/about', label: 'About BridgeED', icon: 'bi-info-circle' },
   ];
 
   return (
