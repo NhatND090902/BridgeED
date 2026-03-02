@@ -2730,3 +2730,259 @@
     width: 100%;
   }
 }
+
+/* ===========================
+   Value Cards Section (Tab 2)
+   =========================== */
+.value-cards-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.row-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.row-section-title i {
+  font-size: 1.5rem;
+  color: #667eea;
+}
+
+.row-section-title h4 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #333;
+}
+
+/* GRACE Value Cards */
+.grace-value-card {
+  background: var(--card-gradient);
+  border-radius: 20px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+}
+
+.grace-value-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.grace-value-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.grace-value-card:hover::before {
+  opacity: 1;
+}
+
+.value-card-icon {
+  width: 70px;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.value-card-icon i {
+  font-size: 2rem;
+  color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.value-card-name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.5px;
+}
+
+/* Scenario Cards */
+.scenario-card {
+  background: white;
+  border-radius: 20px;
+  padding: 1.75rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 200px;
+  border: 2px solid #e9ecef;
+}
+
+.scenario-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--card-gradient);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.scenario-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  border-color: var(--card-color);
+}
+
+.scenario-card:hover::after {
+  opacity: 1;
+}
+
+.scenario-card-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--card-gradient);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.scenario-card-icon i {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.scenario-card-text {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #444;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Value Cards Responsive */
+@media (max-width: 991.98px) {
+  .grace-value-card {
+    min-height: 160px;
+    padding: 1.5rem 1rem;
+  }
+
+  .value-card-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .value-card-icon i {
+    font-size: 1.75rem;
+  }
+
+  .value-card-name {
+    font-size: 1rem;
+  }
+
+  .scenario-card {
+    min-height: 180px;
+    padding: 1.5rem 1rem;
+  }
+
+  .scenario-card-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .scenario-card-icon i {
+    font-size: 1.25rem;
+  }
+
+  .scenario-card-text {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .row-section-title {
+    justify-content: center;
+  }
+
+  .grace-value-card {
+    min-height: 150px;
+    padding: 1.25rem 1rem;
+  }
+
+  .value-card-icon {
+    width: 55px;
+    height: 55px;
+    margin-bottom: 0.75rem;
+  }
+
+  .value-card-icon i {
+    font-size: 1.5rem;
+  }
+
+  .value-card-name {
+    font-size: 0.95rem;
+  }
+
+  .scenario-card {
+    min-height: 160px;
+    padding: 1.25rem 1rem;
+  }
+
+  .scenario-card-icon {
+    width: 46px;
+    height: 46px;
+    margin-bottom: 0.75rem;
+  }
+
+  .scenario-card-text {
+    font-size: 0.85rem;
+    -webkit-line-clamp: 3;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .grace-value-card {
+    min-height: 140px;
+  }
+
+  .scenario-card {
+    min-height: 150px;
+  }
+}

@@ -19,7 +19,7 @@ const GRACE_VALUES = [
   { key: 'respect', label: 'Tôn trọng', emoji: '🤝', color: '#2196F3' },
   { key: 'accountability', label: 'Trách nhiệm', emoji: '📘', color: '#9C27B0' },
   { key: 'courage', label: 'Dũng cảm', emoji: '🦁', color: '#F44336' },
-  { key: 'engagement', label: 'Kết nối', emoji: '🌟', color: '#4CAF50' },
+  { key: 'engagement', label: 'Dấn thân-Kết nối', emoji: '🌟', color: '#4CAF50' },
 ];
 
 const STORAGE_KEY = 'bridged_value_journals';

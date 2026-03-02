@@ -18,15 +18,6 @@ interface ModuleCard {
   thumbnail?: string;
 }
 
-interface MatchingCard {
-  id: string;
-  type: 'value' | 'action';
-  valueKey: string;
-  text: string;
-  emoji: string;
-  color: string;
-}
-
 interface ChecklistItem {
   id: string;
   text: string;
@@ -54,6 +45,22 @@ interface MilestoneState {
     reached50: boolean;
     reached100: boolean;
   };
+}
+
+interface ValueCard {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  gradient: string;
+}
+
+interface ScenarioCard {
+  id: string;
+  text: string;
+  icon: string;
+  color: string;
+  gradient: string;
 }
 
 // ===========================
@@ -135,8 +142,8 @@ const VIDEO_CARDS: ModuleCard[] = [
       '💫 Engagement - Gắn kết: Tích cực tham gia các hoạt động cộng đồng',
     ],
     hasVideo: true,
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+    videoUrl: 'https://www.youtube.com/embed/MwcjHFmF5Bk',
+    thumbnail: 'https://img.youtube.com/vi/MwcjHFmF5Bk/maxresdefault.jpg',
   },
   {
     id: 102,
@@ -153,8 +160,8 @@ const VIDEO_CARDS: ModuleCard[] = [
       'Tình huống 5: Khi cần dũng cảm lên tiếng bảo vệ bạn bè',
     ],
     hasVideo: true,
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+    videoUrl: 'https://www.youtube.com/embed/BVPYnoxch9E',
+    thumbnail: 'https://img.youtube.com/vi/BVPYnoxch9E/maxresdefault.jpg',
   },
   {
     id: 103,
@@ -171,60 +178,86 @@ const VIDEO_CARDS: ModuleCard[] = [
       'Bài học 5: Gắn kết tạo nên sức mạnh tập thể',
     ],
     hasVideo: true,
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+    videoUrl: 'https://www.youtube.com/embed/Tk-2RSYnCKk',
+    thumbnail: 'https://img.youtube.com/vi/Tk-2RSYnCKk/maxresdefault.jpg',
   },
 ];
 
-// Tab 2: Matching Game Data Sets
-const MATCHING_DATASETS = [
+// Tab 2: GRACE Value Cards
+const GRACE_VALUE_CARDS: ValueCard[] = [
   {
-    values: [
-      { valueKey: 'gratitude', text: 'Gratitude', emoji: '🙏', color: '#FFD93D' },
-      { valueKey: 'respect', text: 'Respect', emoji: '🤝', color: '#4ECDC4' },
-      { valueKey: 'accountability', text: 'Accountability', emoji: '✊', color: '#9B59B6' },
-      { valueKey: 'courage', text: 'Courage', emoji: '🦁', color: '#E74C3C' },
-      { valueKey: 'engagement', text: 'Engagement', emoji: '💫', color: '#2ECC71' },
-    ],
-    actions: [
-      { valueKey: 'gratitude', text: 'Nói lời cảm ơn bạn bè', emoji: '🙏', color: '#FFD93D' },
-      { valueKey: 'respect', text: 'Lắng nghe khi người khác nói', emoji: '🤝', color: '#4ECDC4' },
-      { valueKey: 'accountability', text: 'Nhận lỗi khi mắc sai lầm', emoji: '✊', color: '#9B59B6' },
-      { valueKey: 'courage', text: 'Dám phát biểu ý kiến', emoji: '🦁', color: '#E74C3C' },
-      { valueKey: 'engagement', text: 'Tham gia hoạt động nhóm', emoji: '💫', color: '#2ECC71' },
-    ],
+    id: 'gratitude',
+    name: 'Gratitude',
+    icon: 'bi-heart-fill',
+    color: '#FFD93D',
+    gradient: 'linear-gradient(135deg, #FFD93D 0%, #F5C400 100%)',
   },
   {
-    values: [
-      { valueKey: 'gratitude', text: 'Gratitude', emoji: '🙏', color: '#FFD93D' },
-      { valueKey: 'respect', text: 'Respect', emoji: '🤝', color: '#4ECDC4' },
-      { valueKey: 'accountability', text: 'Accountability', emoji: '✊', color: '#9B59B6' },
-      { valueKey: 'courage', text: 'Courage', emoji: '🦁', color: '#E74C3C' },
-      { valueKey: 'engagement', text: 'Engagement', emoji: '💫', color: '#2ECC71' },
-    ],
-    actions: [
-      { valueKey: 'gratitude', text: 'Viết thư cảm ơn thầy cô', emoji: '🙏', color: '#FFD93D' },
-      { valueKey: 'respect', text: 'Không ngắt lời người khác', emoji: '🤝', color: '#4ECDC4' },
-      { valueKey: 'accountability', text: 'Hoàn thành bài tập đúng hạn', emoji: '✊', color: '#9B59B6' },
-      { valueKey: 'courage', text: 'Bảo vệ bạn bè bị bắt nạt', emoji: '🦁', color: '#E74C3C' },
-      { valueKey: 'engagement', text: 'Giúp đỡ bạn bè học bài', emoji: '💫', color: '#2ECC71' },
-    ],
+    id: 'respect',
+    name: 'Respect',
+    icon: 'bi-people-fill',
+    color: '#4ECDC4',
+    gradient: 'linear-gradient(135deg, #4ECDC4 0%, #3DBDB5 100%)',
   },
   {
-    values: [
-      { valueKey: 'gratitude', text: 'Gratitude', emoji: '🙏', color: '#FFD93D' },
-      { valueKey: 'respect', text: 'Respect', emoji: '🤝', color: '#4ECDC4' },
-      { valueKey: 'accountability', text: 'Accountability', emoji: '✊', color: '#9B59B6' },
-      { valueKey: 'courage', text: 'Courage', emoji: '🦁', color: '#E74C3C' },
-      { valueKey: 'engagement', text: 'Engagement', emoji: '💫', color: '#2ECC71' },
-    ],
-    actions: [
-      { valueKey: 'gratitude', text: 'Trân trọng những điều nhỏ bé', emoji: '🙏', color: '#FFD93D' },
-      { valueKey: 'respect', text: 'Tôn trọng ý kiến khác biệt', emoji: '🤝', color: '#4ECDC4' },
-      { valueKey: 'accountability', text: 'Giữ lời hứa với mọi người', emoji: '✊', color: '#9B59B6' },
-      { valueKey: 'courage', text: 'Thử những điều mới mẻ', emoji: '🦁', color: '#E74C3C' },
-      { valueKey: 'engagement', text: 'Tổ chức hoạt động lớp', emoji: '💫', color: '#2ECC71' },
-    ],
+    id: 'accountability',
+    name: 'Accountability',
+    icon: 'bi-shield-check',
+    color: '#9B59B6',
+    gradient: 'linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%)',
+  },
+  {
+    id: 'courage',
+    name: 'Courage',
+    icon: 'bi-lightning-fill',
+    color: '#E74C3C',
+    gradient: 'linear-gradient(135deg, #E74C3C 0%, #C0392B 100%)',
+  },
+  {
+    id: 'engage',
+    name: 'Engage',
+    icon: 'bi-link-45deg',
+    color: '#2ECC71',
+    gradient: 'linear-gradient(135deg, #2ECC71 0%, #27AE60 100%)',
+  },
+];
+
+// Tab 2: Scenario Cards
+const SCENARIO_CARDS: ScenarioCard[] = [
+  {
+    id: 'scenario_1',
+    text: 'Bạn Hoa giúp bạn hoàn thành nhiệm vụ mà cô giáo giao. Bạn sẽ làm gì?',
+    icon: 'bi-hand-thumbs-up-fill',
+    color: '#FF6B6B',
+    gradient: 'linear-gradient(135deg, #FF6B6B 0%, #EE5A5A 100%)',
+  },
+  {
+    id: 'scenario_2',
+    text: 'Bạn sẽ làm gì nếu người khác có quan điểm khác rõ rệt với bạn?',
+    icon: 'bi-chat-dots-fill',
+    color: '#45B7D1',
+    gradient: 'linear-gradient(135deg, #45B7D1 0%, #3AA8C2 100%)',
+  },
+  {
+    id: 'scenario_3',
+    text: 'Bạn trễ deadline dẫn đến ảnh hưởng tới cả nhóm. Bạn giải quyết như thế nào?',
+    icon: 'bi-clock-fill',
+    color: '#F39C12',
+    gradient: 'linear-gradient(135deg, #F39C12 0%, #E67E22 100%)',
+  },
+  {
+    id: 'scenario_4',
+    text: 'Bạn phát hiện sai sót nghiêm trọng trong dự án nhưng nhóm không muốn thảo luận. Bạn sẽ làm gì trong trường hợp này?',
+    icon: 'bi-exclamation-triangle-fill',
+    color: '#1ABC9C',
+    gradient: 'linear-gradient(135deg, #1ABC9C 0%, #16A085 100%)',
+  },
+  {
+    id: 'scenario_5',
+    text: 'Trong một dự án, An ít nói và không tham gia ý kiến. Nếu bạn là trưởng nhóm của team, bạn sẽ giải quyết như thế nào?',
+    icon: 'bi-person-fill-gear',
+    color: '#8E44AD',
+    gradient: 'linear-gradient(135deg, #8E44AD 0%, #7D3C98 100%)',
   },
 ];
 
@@ -278,42 +311,6 @@ const DEFAULT_CHECKLISTS: ChecklistGroup[] = [
 ];
 
 // ===========================
-// Helper Functions
-// ===========================
-const shuffleArray = <T,>(array: T[]): T[] => {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-};
-
-const generateMatchingCards = (datasetIndex: number): { valueCards: MatchingCard[]; actionCards: MatchingCard[] } => {
-  const dataset = MATCHING_DATASETS[datasetIndex];
-  
-  const valueCards: MatchingCard[] = shuffleArray(dataset.values.map((v, idx) => ({
-    id: `value_${idx}`,
-    type: 'value' as const,
-    valueKey: v.valueKey,
-    text: v.text,
-    emoji: v.emoji,
-    color: v.color,
-  })));
-  
-  const actionCards: MatchingCard[] = shuffleArray(dataset.actions.map((a, idx) => ({
-    id: `action_${idx}`,
-    type: 'action' as const,
-    valueKey: a.valueKey,
-    text: a.text,
-    emoji: a.emoji,
-    color: a.color,
-  })));
-  
-  return { valueCards, actionCards };
-};
-
-// ===========================
 // Main Component
 // ===========================
 const GraceLibrary = () => {
@@ -327,16 +324,8 @@ const GraceLibrary = () => {
     data: ModuleCard | ChecklistGroup | null;
   }>({ type: 'module', data: null });
   
-  // Matching Game States
-  const [currentDataset, setCurrentDataset] = useState(0);
-  const [valueCards, setValueCards] = useState<MatchingCard[]>([]);
-  const [actionCards, setActionCards] = useState<MatchingCard[]>([]);
-  const [selectedValue, setSelectedValue] = useState<MatchingCard | null>(null);
-  const [selectedAction, setSelectedAction] = useState<MatchingCard | null>(null);
-  const [matchedPairs, setMatchedPairs] = useState<string[]>([]);
-  const [shakeCard, setShakeCard] = useState<string | null>(null);
+  // Fireworks State
   const [showFireworks, setShowFireworks] = useState(false);
-  const [gameCompleted, setGameCompleted] = useState(false);
   
   // Checklist States
   const [checklists, setChecklists] = useState<ChecklistGroup[]>([]);
@@ -352,9 +341,6 @@ const GraceLibrary = () => {
   
   // Modal States for Reset Confirmation
   const [showResetConfirm, setShowResetConfirm] = useState(false);
-  
-  // Suppress unused variable warning
-  void currentDataset;
   
   // ===========================
   // Initialize
@@ -415,20 +401,6 @@ const GraceLibrary = () => {
     loadMilestones();
     loadBadge();
     loadGlobalCompletion();
-    initializeGame();
-  }, []);
-  
-  // Initialize Matching Game
-  const initializeGame = useCallback(() => {
-    const randomIndex = Math.floor(Math.random() * MATCHING_DATASETS.length);
-    setCurrentDataset(randomIndex);
-    const { valueCards: vc, actionCards: ac } = generateMatchingCards(randomIndex);
-    setValueCards(vc);
-    setActionCards(ac);
-    setSelectedValue(null);
-    setSelectedAction(null);
-    setMatchedPairs([]);
-    setGameCompleted(false);
   }, []);
   
   // Save checklists to localStorage
@@ -550,60 +522,6 @@ const GraceLibrary = () => {
     setShowModal(false);
     setModalContent({ type: 'module', data: null });
     document.body.style.overflow = 'unset';
-  };
-  
-  // ===========================
-  // Matching Game Handlers
-  // ===========================
-  const handleValueCardClick = (card: MatchingCard) => {
-    if (matchedPairs.includes(card.valueKey)) return;
-    setSelectedValue(card);
-    
-    if (selectedAction) {
-      checkMatch(card, selectedAction);
-    }
-  };
-  
-  const handleActionCardClick = (card: MatchingCard) => {
-    if (matchedPairs.includes(card.valueKey)) return;
-    setSelectedAction(card);
-    
-    if (selectedValue) {
-      checkMatch(selectedValue, card);
-    }
-  };
-  
-  const checkMatch = (value: MatchingCard, action: MatchingCard) => {
-    if (value.valueKey === action.valueKey) {
-      // Correct match
-      const newMatchedPairs = [...matchedPairs, value.valueKey];
-      setMatchedPairs(newMatchedPairs);
-      setSelectedValue(null);
-      setSelectedAction(null);
-      
-      // Check if game completed
-      if (newMatchedPairs.length === 5) {
-        setGameCompleted(true);
-        setShowFireworks(true);
-      }
-    } else {
-      // Incorrect match - shake animation
-      setShakeCard(value.id);
-      setTimeout(() => {
-        setShakeCard(action.id);
-      }, 100);
-      
-      setTimeout(() => {
-        setShakeCard(null);
-        setSelectedValue(null);
-        setSelectedAction(null);
-      }, 500);
-    }
-  };
-  
-  const resetGame = () => {
-    initializeGame();
-    setShowFireworks(false);
   };
   
   // ===========================
@@ -884,116 +802,72 @@ const GraceLibrary = () => {
         )}
 
         {/* ======================== */}
-        {/* TAB 2: Value Cards Game */}
+        {/* TAB 2: Value Cards */}
         {/* ======================== */}
         {activeTab === 'game' && (
           <div className="container py-4 tab-panel">
-            <div className="game-container">
-              <div className="game-header text-center mb-4">
-                <h2 className="game-title">
-                  <i className="bi bi-puzzle me-2"></i>
-                  Trò chơi ghép thẻ GRACE
+            <div className="value-cards-container">
+              {/* Section Header */}
+              <div className="section-header text-center mb-5">
+                <h2 className="section-title">
+                  <i className="bi bi-suit-heart-fill me-2"></i>
+                  Giá trị GRACE
                 </h2>
-                <p className="game-description">
-                  Ghép mỗi giá trị GRACE với hành động tương ứng
+                <p className="section-description">
+                  Khám phá 5 giá trị cốt lõi và các tình huống thực hành
                 </p>
               </div>
               
-              {/* Game Board */}
-              <div className="game-board">
-                {/* Row 1: Value Cards */}
-                <div className="cards-row values-row">
-                  <h4 className="row-label">
-                    <i className="bi bi-star-fill me-2"></i>
-                    Giá trị GRACE
-                  </h4>
-                  <div className="cards-container">
-                    {valueCards.map(card => (
-                      <button
-                        key={card.id}
-                        className={`game-card value-card ${
-                          selectedValue?.id === card.id ? 'selected' : ''
-                        } ${matchedPairs.includes(card.valueKey) ? 'matched' : ''} ${
-                          shakeCard === card.id ? 'shake' : ''
-                        }`}
-                        style={{ '--card-color': card.color } as React.CSSProperties}
-                        onClick={() => handleValueCardClick(card)}
-                        disabled={matchedPairs.includes(card.valueKey)}
+              {/* Row 1: GRACE Value Cards */}
+              <div className="mb-5">
+                <h4 className="row-section-title text-center mb-4">
+                  <i className="bi bi-star-fill me-2 text-warning"></i>
+                  5 Giá trị cốt lõi GRACE
+                </h4>
+                <div className="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3 g-md-4">
+                  {GRACE_VALUE_CARDS.map(card => (
+                    <div className="col" key={card.id}>
+                      <div 
+                        className="grace-value-card h-100"
+                        style={{ 
+                          '--card-gradient': card.gradient,
+                          '--card-color': card.color 
+                        } as React.CSSProperties}
                       >
-                        <span className="card-emoji">{card.emoji}</span>
-                        <span className="card-text">{card.text}</span>
-                        {matchedPairs.includes(card.valueKey) && (
-                          <span className="match-check">
-                            <i className="bi bi-check-circle-fill"></i>
-                          </span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Row 2: Action Cards */}
-                <div className="cards-row actions-row">
-                  <h4 className="row-label">
-                    <i className="bi bi-lightning-fill me-2"></i>
-                    Hành động tương ứng
-                  </h4>
-                  <div className="cards-container">
-                    {actionCards.map(card => (
-                      <button
-                        key={card.id}
-                        className={`game-card action-card ${
-                          selectedAction?.id === card.id ? 'selected' : ''
-                        } ${matchedPairs.includes(card.valueKey) ? 'matched' : ''} ${
-                          shakeCard === card.id ? 'shake' : ''
-                        }`}
-                        style={{ '--card-color': card.color } as React.CSSProperties}
-                        onClick={() => handleActionCardClick(card)}
-                        disabled={matchedPairs.includes(card.valueKey)}
-                      >
-                        <span className="card-emoji">{card.emoji}</span>
-                        <span className="card-text">{card.text}</span>
-                        {matchedPairs.includes(card.valueKey) && (
-                          <span className="match-check">
-                            <i className="bi bi-check-circle-fill"></i>
-                          </span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
+                        <div className="value-card-icon">
+                          <i className={`bi ${card.icon}`}></i>
+                        </div>
+                        <h5 className="value-card-name">{card.name}</h5>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
               
-              {/* Game Progress */}
-              <div className="game-progress">
-                <div className="progress-info">
-                  <span>Tiến độ: {matchedPairs.length} / 5</span>
-                  <ProgressBar
-                    progress={(matchedPairs.length / 5) * 100}
-                    completedTasks={matchedPairs.length}
-                    totalTasks={5}
-                    gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                    height="10px"
-                    showText={false}
-                  />
+              {/* Row 2: Scenario Cards */}
+              <div>
+                <h4 className="row-section-title text-center mb-4">
+                  <i className="bi bi-chat-square-quote-fill me-2 text-info"></i>
+                  Tình huống thực hành
+                </h4>
+                <div className="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3 g-md-4">
+                  {SCENARIO_CARDS.map(card => (
+                    <div className="col" key={card.id}>
+                      <div 
+                        className="scenario-card h-100"
+                        style={{ 
+                          '--card-gradient': card.gradient,
+                          '--card-color': card.color 
+                        } as React.CSSProperties}
+                      >
+                        <div className="scenario-card-icon">
+                          <i className={`bi ${card.icon}`}></i>
+                        </div>
+                        <p className="scenario-card-text">{card.text}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
-              
-              {/* Completion Message */}
-              {gameCompleted && (
-                <div className="game-completed">
-                  <div className="completion-icon">🎉</div>
-                  <h3>Chúc mừng bạn đã hoàn thành thử thách!</h3>
-                  <p>Bạn đã ghép đúng tất cả các thẻ GRACE</p>
-                </div>
-              )}
-              
-              {/* Reset Button */}
-              <div className="game-actions text-center mt-4">
-                <button className="btn-reset-game" onClick={resetGame}>
-                  <i className="bi bi-arrow-clockwise me-2"></i>
-                  Chơi lại
-                </button>
               </div>
             </div>
           </div>

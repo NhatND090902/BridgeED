@@ -42,7 +42,7 @@ const GRACE_VALUES: GraceValue[] = [
   { key: 'respect', label: 'Tôn trọng', emoji: '🤝', color: '#4ECDC4' },
   { key: 'accountability', label: 'Trách nhiệm', emoji: '✊', color: '#9B59B6' },
   { key: 'courage', label: 'Dũng cảm', emoji: '🦁', color: '#E74C3C' },
-  { key: 'engagement', label: 'Kết nối', emoji: '💫', color: '#2ECC71' },
+  { key: 'engagement', label: 'Dấn thân-Kết nối', emoji: '💫', color: '#2ECC71' },
 ];
 
 const Dashboard = () => {

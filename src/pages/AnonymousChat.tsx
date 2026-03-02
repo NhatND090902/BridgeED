@@ -59,7 +59,7 @@ const PREDEFINED_QA: QuestionResponse[] = [
   {
     question: 'Làm sao để thực hành GRACE mỗi ngày?',
     responses: [
-      'GRACE gồm: Biết ơn (Gratitude), Tôn trọng (Respect), Trách nhiệm (Accountability), Dũng cảm (Courage), Kết nối (Engagement).',
+      'GRACE gồm: Biết ơn (Gratitude), Tôn trọng (Respect), Trách nhiệm (Accountability), Dũng cảm (Courage), Dấn thân-Kết nối (Engagement).',
       'Mỗi sáng, hãy dành 2 phút để nghĩ về điều bạn biết ơn. Đây là cách đơn giản để bắt đầu.',
       'Bạn có thể chọn một giá trị GRACE để tập trung mỗi tuần. Ghi lại những khoảnh khắc bạn thực hành thành công nhé! ✨',
     ],
@@ -359,7 +359,7 @@ const AnonymousChat = () => {
                 </div>
                 <div className="grace-value">
                   <span className="grace-emoji">💫</span>
-                  <span className="grace-label">Kết nối</span>
+                  <span className="grace-label">Dấn thân-Kết nối</span>
                 </div>
               </div>
             </div>
