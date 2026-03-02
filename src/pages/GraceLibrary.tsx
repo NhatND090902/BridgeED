@@ -2,6 +2,13 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { FireworksEffect, ProgressBar } from '../components';
 import './GraceLibrary.css';
 
+// Value Card Images
+import gratitudeImg from '../assets/images/gratitude.png';
+import respectImg from '../assets/images/respect.png';
+import accountabilityImg from '../assets/images/accountability.png';
+import successImg from '../assets/images/success.png';
+import publicRelationImg from '../assets/images/public-relation.png';
+
 // ===========================
 // Types
 // ===========================
@@ -51,7 +58,7 @@ interface ValueCard {
   id: string;
   name: string;
   letter: string;
-  emoji: string;
+  image: string;
   frameColor: string;
 }
 
@@ -187,35 +194,35 @@ const GRACE_VALUE_CARDS: ValueCard[] = [
     id: 'gratitude',
     name: 'Gratitude',
     letter: 'G',
-    emoji: '😤',
+    image: gratitudeImg,
     frameColor: '#5B8C51',
   },
   {
     id: 'respect',
     name: 'Respect',
     letter: 'R',
-    emoji: '⭐',
+    image: respectImg,
     frameColor: '#7cea66',
   },
   {
     id: 'accountability',
     name: 'Accountability',
     letter: 'A',
-    emoji: '🌿',
+    image: accountabilityImg,
     frameColor: '#8B956D',
   },
   {
     id: 'courage',
     name: 'Courage',
     letter: 'C',
-    emoji: '💗',
+    image: successImg,
     frameColor: '#51848c',
   },
   {
     id: 'engage',
     name: 'Engagement',
     letter: 'E',
-    emoji: '🐙',
+    image: publicRelationImg,
     frameColor: '#2cc89e',
   },
 ];
@@ -822,7 +829,7 @@ const GraceLibrary = () => {
                         } as React.CSSProperties}
                       >
                         <div className="value-card-inner">
-                          <span className="value-card-emoji">{card.emoji}</span>
+                          <img src={card.image} alt={card.name} className="value-card-image" />
                         </div>
                         <div className="value-card-letter">{card.letter}</div>
                         <h5 className="value-card-name">{card.name}</h5>
