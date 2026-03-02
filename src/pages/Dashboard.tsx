@@ -521,7 +521,7 @@ const Dashboard = () => {
                     </div>
                     <div className="stat-content">
                       <span className="stat-value">{stats.totalLogs}</span>
-                      <span className="stat-label">Tổng số lần ghi nhận</span>
+                      <span className="">Tổng số lần ghi nhận</span>
                     </div>
                   </div>
                 </div>
@@ -538,7 +538,7 @@ const Dashboard = () => {
                       <span className="stat-value">
                         {stats.mostCommonEmotion?.emotion || '--'}
                       </span>
-                      <span className="stat-label">Cảm xúc phổ biến nhất</span>
+                      <span className="">Cảm xúc phổ biến nhất</span>
                     </div>
                   </div>
                 </div>
@@ -549,7 +549,7 @@ const Dashboard = () => {
                     </div>
                     <div className="stat-content">
                       <span className="stat-value">{stats.streak}</span>
-                      <span className="stat-label">Chuỗi ngày liên tiếp</span>
+                      <span className="">Chuỗi ngày liên tiếp</span>
                     </div>
                   </div>
                 </div>
@@ -676,7 +676,7 @@ const Dashboard = () => {
                     </div>
                     <div className="stat-content">
                       <span className="stat-value">{valueStats.totalJournals}</span>
-                      <span className="stat-label">Tổng số nhật ký</span>
+                      <span className="">Tổng số nhật ký</span>
                     </div>
                   </div>
                 </div>
@@ -693,7 +693,7 @@ const Dashboard = () => {
                       <span className="stat-value">
                         {valueStats.mostPracticed?.label || '--'}
                       </span>
-                      <span className="stat-label">Giá trị thực hành nhiều nhất</span>
+                      <span className="">Giá trị thực hành nhiều nhất</span>
                     </div>
                   </div>
                 </div>
@@ -710,7 +710,7 @@ const Dashboard = () => {
                       <span className="stat-value">
                         {valueStats.recentValue?.label || '--'}
                       </span>
-                      <span className="stat-label">Giá trị gần nhất</span>
+                      <span className="">Giá trị gần nhất</span>
                     </div>
                   </div>
                 </div>

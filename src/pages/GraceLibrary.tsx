@@ -50,17 +50,15 @@ interface MilestoneState {
 interface ValueCard {
   id: string;
   name: string;
-  icon: string;
-  color: string;
-  gradient: string;
+  letter: string;
+  emoji: string;
+  frameColor: string;
 }
 
 interface ScenarioCard {
   id: string;
   text: string;
-  icon: string;
-  color: string;
-  gradient: string;
+  frameColor: string;
 }
 
 // ===========================
@@ -188,37 +186,37 @@ const GRACE_VALUE_CARDS: ValueCard[] = [
   {
     id: 'gratitude',
     name: 'Gratitude',
-    icon: 'bi-heart-fill',
-    color: '#FFD93D',
-    gradient: 'linear-gradient(135deg, #FFD93D 0%, #F5C400 100%)',
+    letter: 'G',
+    emoji: '😤',
+    frameColor: '#5B8C51',
   },
   {
     id: 'respect',
     name: 'Respect',
-    icon: 'bi-people-fill',
-    color: '#4ECDC4',
-    gradient: 'linear-gradient(135deg, #4ECDC4 0%, #3DBDB5 100%)',
+    letter: 'R',
+    emoji: '⭐',
+    frameColor: '#5B8C51',
   },
   {
     id: 'accountability',
     name: 'Accountability',
-    icon: 'bi-shield-check',
-    color: '#9B59B6',
-    gradient: 'linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%)',
+    letter: 'A',
+    emoji: '🌿',
+    frameColor: '#8B956D',
   },
   {
     id: 'courage',
     name: 'Courage',
-    icon: 'bi-lightning-fill',
-    color: '#E74C3C',
-    gradient: 'linear-gradient(135deg, #E74C3C 0%, #C0392B 100%)',
+    letter: 'C',
+    emoji: '💗',
+    frameColor: '#5B8C51',
   },
   {
     id: 'engage',
     name: 'Engage',
-    icon: 'bi-link-45deg',
-    color: '#2ECC71',
-    gradient: 'linear-gradient(135deg, #2ECC71 0%, #27AE60 100%)',
+    letter: 'E',
+    emoji: '🐙',
+    frameColor: '#5B8C51',
   },
 ];
 
@@ -227,37 +225,27 @@ const SCENARIO_CARDS: ScenarioCard[] = [
   {
     id: 'scenario_1',
     text: 'Bạn Hoa giúp bạn hoàn thành nhiệm vụ mà cô giáo giao. Bạn sẽ làm gì?',
-    icon: 'bi-hand-thumbs-up-fill',
-    color: '#FF6B6B',
-    gradient: 'linear-gradient(135deg, #FF6B6B 0%, #EE5A5A 100%)',
+    frameColor: '#5B8C51',
   },
   {
     id: 'scenario_2',
     text: 'Bạn sẽ làm gì nếu người khác có quan điểm khác rõ rệt với bạn?',
-    icon: 'bi-chat-dots-fill',
-    color: '#45B7D1',
-    gradient: 'linear-gradient(135deg, #45B7D1 0%, #3AA8C2 100%)',
+    frameColor: '#5B8C51',
   },
   {
     id: 'scenario_3',
     text: 'Bạn trễ deadline dẫn đến ảnh hưởng tới cả nhóm. Bạn giải quyết như thế nào?',
-    icon: 'bi-clock-fill',
-    color: '#F39C12',
-    gradient: 'linear-gradient(135deg, #F39C12 0%, #E67E22 100%)',
+    frameColor: '#8B956D',
   },
   {
     id: 'scenario_4',
     text: 'Bạn phát hiện sai sót nghiêm trọng trong dự án nhưng nhóm không muốn thảo luận. Bạn sẽ làm gì trong trường hợp này?',
-    icon: 'bi-exclamation-triangle-fill',
-    color: '#1ABC9C',
-    gradient: 'linear-gradient(135deg, #1ABC9C 0%, #16A085 100%)',
+    frameColor: '#5B8C51',
   },
   {
     id: 'scenario_5',
     text: 'Trong một dự án, An ít nói và không tham gia ý kiến. Nếu bạn là trưởng nhóm của team, bạn sẽ giải quyết như thế nào?',
-    icon: 'bi-person-fill-gear',
-    color: '#8E44AD',
-    gradient: 'linear-gradient(135deg, #8E44AD 0%, #7D3C98 100%)',
+    frameColor: '#5B8C51',
   },
 ];
 
@@ -822,7 +810,7 @@ const GraceLibrary = () => {
               <div className="mb-5">
                 <h4 className="row-section-title text-center mb-4">
                   <i className="bi bi-star-fill me-2 text-warning"></i>
-                  5 Giá trị cốt lõi GRACE
+                  GRACE Cards
                 </h4>
                 <div className="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3 g-md-4">
                   {GRACE_VALUE_CARDS.map(card => (
@@ -830,13 +818,13 @@ const GraceLibrary = () => {
                       <div 
                         className="grace-value-card h-100"
                         style={{ 
-                          '--card-gradient': card.gradient,
-                          '--card-color': card.color 
+                          '--frame-color': card.frameColor
                         } as React.CSSProperties}
                       >
-                        <div className="value-card-icon">
-                          <i className={`bi ${card.icon}`}></i>
+                        <div className="value-card-inner">
+                          <span className="value-card-emoji">{card.emoji}</span>
                         </div>
+                        <div className="value-card-letter">{card.letter}</div>
                         <h5 className="value-card-name">{card.name}</h5>
                       </div>
                     </div>
@@ -846,24 +834,19 @@ const GraceLibrary = () => {
               
               {/* Row 2: Scenario Cards */}
               <div>
-                <h4 className="row-section-title text-center mb-4">
-                  <i className="bi bi-chat-square-quote-fill me-2 text-info"></i>
-                  Tình huống thực hành
-                </h4>
-                <div className="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3 g-md-4">
+                <div className="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3 g-md-4">
                   {SCENARIO_CARDS.map(card => (
                     <div className="col" key={card.id}>
                       <div 
                         className="scenario-card h-100"
                         style={{ 
-                          '--card-gradient': card.gradient,
-                          '--card-color': card.color 
+                          '--frame-color': card.frameColor
                         } as React.CSSProperties}
                       >
-                        <div className="scenario-card-icon">
-                          <i className={`bi ${card.icon}`}></i>
-                        </div>
                         <p className="scenario-card-text">{card.text}</p>
+                        <div className="scenario-card-mic">
+                          <i className="bi bi-mic-fill"></i>
+                        </div>
                       </div>
                     </div>
                   ))}
