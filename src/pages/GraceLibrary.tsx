@@ -213,7 +213,7 @@ const GRACE_VALUE_CARDS: ValueCard[] = [
   },
   {
     id: 'engage',
-    name: 'Engage',
+    name: 'Engagement',
     letter: 'E',
     emoji: '🐙',
     frameColor: '#5B8C51',
