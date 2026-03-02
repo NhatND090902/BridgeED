@@ -38,7 +38,7 @@ const GraceModule = () => {
     },
     {
       letter: 'E',
-      title: 'Engage (Kết nối)',
+      title: 'Engagement (Kết nối)',
       description: 'Chủ động tham gia, kết nối với bản thân và những người xung quanh theo cách tích cực. Sự kết nối giúp bạn cảm thấy được hỗ trợ, thấu hiểu và phát triển.',
       icon: 'bi-arrows-fullscreen',
       color: '#96CEB4',

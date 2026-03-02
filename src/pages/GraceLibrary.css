@@ -2311,3 +2311,422 @@
     font-size: 1.25rem;
   }
 }
+
+/* ===========================
+   Badge Earned Banner (Persistent)
+   =========================== */
+.badge-earned-banner {
+  background: linear-gradient(135deg, #FFD93D 0%, #FFA726 100%);
+  padding: 0.75rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3);
+  animation: slideDown 0.5s ease;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.badge-earned-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.badge-icon-large {
+  font-size: 2rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.badge-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #333;
+}
+
+.badge-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.badge-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #1a1a2e;
+}
+
+/* ===========================
+   Badge Tab Display (Top of Tab 3)
+   =========================== */
+.badge-tab-display {
+  background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
+  border: 2px solid #FFD93D;
+  border-radius: 20px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 4px 20px rgba(255, 217, 61, 0.2);
+  animation: fadeInScale 0.5s ease;
+}
+
+@keyframes fadeInScale {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.badge-tab-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.badge-icon-display {
+  font-size: 3rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.badge-text-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.badge-display-label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.badge-display-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  background: linear-gradient(135deg, #FFD93D 0%, #FFA726 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===========================
+   Reset Checklist Button
+   =========================== */
+.btn-reset-checklist {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.btn-reset-checklist:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.btn-reset-checklist:active {
+  transform: translateY(0);
+}
+
+/* ===========================
+   Reset Confirmation Modal
+   =========================== */
+.reset-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  animation: fadeIn 0.3s ease;
+  padding: 1rem;
+}
+
+.reset-modal {
+  background: white;
+  border-radius: 24px;
+  padding: 2.5rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.reset-modal-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.reset-modal-icon i {
+  font-size: 2.5rem;
+  color: #f0ad4e;
+}
+
+.reset-modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 1rem;
+}
+
+.reset-modal-text {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.reset-modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-confirm-reset,
+.btn-cancel-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.875rem 1.75rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  min-width: 140px;
+}
+
+.btn-confirm-reset {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.btn-confirm-reset:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+.btn-cancel-reset {
+  background: #f8f9fa;
+  color: #495057;
+  border: 2px solid #dee2e6;
+}
+
+.btn-cancel-reset:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+/* ===========================
+   Progress Status Colors
+   =========================== */
+.progress-status {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+}
+
+.status-warning {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-progress {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-complete {
+  background: #d4edda;
+  color: #155724;
+  animation: glowSuccess 1.5s ease-in-out infinite;
+}
+
+@keyframes glowSuccess {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4); }
+  50% { box-shadow: 0 0 10px 3px rgba(40, 167, 69, 0.2); }
+}
+
+.progress-count {
+  text-align: right;
+}
+
+/* ===========================
+   Checklist Item Animations
+   =========================== */
+.checklist-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.checklist-item.completed {
+  animation: checkComplete 0.3s ease;
+}
+
+@keyframes checkComplete {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); background: rgba(40, 167, 69, 0.1); }
+  100% { transform: scale(1); }
+}
+
+/* ===========================
+   Responsive - Badge & Reset
+   =========================== */
+@media (max-width: 768px) {
+  .badge-earned-banner {
+    padding: 0.5rem 0;
+  }
+
+  .badge-icon-large {
+    font-size: 1.5rem;
+  }
+
+  .badge-label {
+    font-size: 0.85rem;
+  }
+
+  .badge-name {
+    font-size: 1rem;
+  }
+
+  .badge-tab-display {
+    padding: 1rem;
+  }
+
+  .badge-icon-display {
+    font-size: 2.5rem;
+  }
+
+  .badge-display-label {
+    font-size: 0.8rem;
+  }
+
+  .badge-display-name {
+    font-size: 1.25rem;
+  }
+
+  .btn-reset-checklist {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .reset-modal {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .reset-modal-icon {
+    width: 64px;
+    height: 64px;
+  }
+
+  .reset-modal-icon i {
+    font-size: 2rem;
+  }
+
+  .reset-modal-title {
+    font-size: 1.25rem;
+  }
+
+  .reset-modal-text {
+    font-size: 0.9rem;
+  }
+
+  .btn-confirm-reset,
+  .btn-cancel-reset {
+    flex: 1;
+    min-width: 0;
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .badge-earned-content {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .badge-info {
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: center;
+  }
+
+  .badge-tab-content {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .badge-text-wrapper {
+    align-items: center;
+    text-align: center;
+  }
+
+  .reset-modal-actions {
+    flex-direction: column;
+  }
+
+  .btn-confirm-reset,
+  .btn-cancel-reset {
+    width: 100%;
+  }
+}

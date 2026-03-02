@@ -6,5 +6,6 @@ export { default as LibraryCard } from './LibraryCard';
 export { default as LibraryModal } from './LibraryModal';
 export { default as BadgeIcon, getRandomBadgeIcon, BADGE_ICONS } from './BadgeIcon';
 export { default as BadgeAnimation } from './BadgeAnimation';
+export { default as MedalDisplay } from './MedalDisplay';
 export type { LibraryCardData } from './LibraryCard';
 export type { BadgeData } from './BadgeIcon';

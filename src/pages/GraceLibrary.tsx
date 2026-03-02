@@ -43,10 +43,38 @@ interface ChecklistGroup {
   items: ChecklistItem[];
 }
 
+interface Badge {
+  id: string;
+  icon: string;
+  name: string;
+}
+
+interface MilestoneState {
+  [checklistId: number]: {
+    reached50: boolean;
+    reached100: boolean;
+  };
+}
+
 // ===========================
 // Storage Keys
 // ===========================
 const CHECKLIST_STORAGE_KEY = 'graceLibraryChecklists';
+const MILESTONE_STORAGE_KEY = 'graceLibraryMilestones';
+const BADGE_STORAGE_KEY = 'graceLibraryBadge';
+const MEDALS_STORAGE_KEY = 'graceLibraryMedals';
+const GLOBAL_COMPLETION_KEY = 'graceLibraryGlobalComplete';
+
+// ===========================
+// Badge Constants
+// ===========================
+const BADGES: Badge[] = [
+  { id: 'badge_star', icon: '⭐', name: 'Ngôi sao kiên trì' },
+  { id: 'badge_fire', icon: '🔥', name: 'Chiến binh GRACE' },
+  { id: 'badge_heart', icon: '💖', name: 'Trái tim tích cực' },
+  { id: 'badge_crown', icon: '👑', name: 'Nhà lãnh đạo tích cực' },
+  { id: 'badge_rocket', icon: '🚀', name: 'Người bứt phá' },
+];
 
 // ===========================
 // Data Constants
@@ -316,6 +344,15 @@ const GraceLibrary = () => {
   const [editingText, setEditingText] = useState('');
   const [newItemText, setNewItemText] = useState<{ [groupId: number]: string }>({});
   
+  // Milestone & Badge States
+  const [milestones, setMilestones] = useState<MilestoneState>({});
+  const [earnedBadge, setEarnedBadge] = useState<Badge | null>(null);
+  const [fireworksMessage, setFireworksMessage] = useState('');
+  const [globalCompleted, setGlobalCompleted] = useState(false);
+  
+  // Modal States for Reset Confirmation
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  
   // Suppress unused variable warning
   void currentDataset;
   
@@ -338,7 +375,46 @@ const GraceLibrary = () => {
       }
     };
     
+    // Load milestones from localStorage
+    const loadMilestones = () => {
+      try {
+        const stored = localStorage.getItem(MILESTONE_STORAGE_KEY);
+        if (stored) {
+          setMilestones(JSON.parse(stored));
+        }
+      } catch {
+        setMilestones({});
+      }
+    };
+    
+    // Load badge from localStorage
+    const loadBadge = () => {
+      try {
+        const stored = localStorage.getItem(BADGE_STORAGE_KEY);
+        if (stored) {
+          setEarnedBadge(JSON.parse(stored));
+        }
+      } catch {
+        setEarnedBadge(null);
+      }
+    };
+    
+    // Load global completion status
+    const loadGlobalCompletion = () => {
+      try {
+        const stored = localStorage.getItem(GLOBAL_COMPLETION_KEY);
+        if (stored) {
+          setGlobalCompleted(JSON.parse(stored));
+        }
+      } catch {
+        setGlobalCompleted(false);
+      }
+    };
+    
     loadChecklists();
+    loadMilestones();
+    loadBadge();
+    loadGlobalCompletion();
     initializeGame();
   }, []);
   
@@ -360,6 +436,106 @@ const GraceLibrary = () => {
     setChecklists(updatedChecklists);
     localStorage.setItem(CHECKLIST_STORAGE_KEY, JSON.stringify(updatedChecklists));
   }, []);
+  
+  // Save milestones to localStorage
+  const saveMilestones = useCallback((updatedMilestones: MilestoneState) => {
+    setMilestones(updatedMilestones);
+    localStorage.setItem(MILESTONE_STORAGE_KEY, JSON.stringify(updatedMilestones));
+  }, []);
+  
+  // Save badge to localStorage
+  const saveBadge = useCallback((badge: Badge | null) => {
+    setEarnedBadge(badge);
+    if (badge) {
+      localStorage.setItem(BADGE_STORAGE_KEY, JSON.stringify(badge));
+    } else {
+      localStorage.removeItem(BADGE_STORAGE_KEY);
+    }
+  }, []);
+  
+  // Save medal to localStorage (stores all earned medals)
+  const saveMedalToStorage = useCallback((medal: Badge & { checklistId: number; checklistTitle: string; earnedAt: string }) => {
+    try {
+      const stored = localStorage.getItem(MEDALS_STORAGE_KEY);
+      const medals = stored ? JSON.parse(stored) : [];
+      // Check if medal for this checklist already exists
+      const existingIndex = medals.findIndex((m: { checklistId: number }) => m.checklistId === medal.checklistId);
+      if (existingIndex === -1) {
+        medals.push(medal);
+        localStorage.setItem(MEDALS_STORAGE_KEY, JSON.stringify(medals));
+      }
+    } catch {
+      localStorage.setItem(MEDALS_STORAGE_KEY, JSON.stringify([medal]));
+    }
+  }, []);
+  
+  // Award random badge
+  const awardRandomBadge = useCallback(() => {
+    const randomIndex = Math.floor(Math.random() * BADGES.length);
+    const badge = BADGES[randomIndex];
+    saveBadge(badge);
+    return badge;
+  }, [saveBadge]);
+  
+  // Check milestone progress and trigger fireworks
+  const checkMilestones = useCallback((updatedChecklists: ChecklistGroup[], currentMilestones: MilestoneState) => {
+    let newMilestones = { ...currentMilestones };
+    let shouldTriggerFireworks = false;
+    let message = '';
+    
+    // Check each checklist for milestones
+    for (const group of updatedChecklists) {
+      const completed = group.items.filter(item => item.completed).length;
+      const total = group.items.length;
+      const percentage = total > 0 ? (completed / total) * 100 : 0;
+      
+      const groupMilestone = newMilestones[group.id] || { reached50: false, reached100: false };
+      
+      // Track 50% milestone progress (no fireworks)
+      if (percentage >= 50 && !groupMilestone.reached50) {
+        groupMilestone.reached50 = true;
+      }
+      
+      // Check 100% milestone - only show fireworks when fully complete
+      if (percentage === 100 && !groupMilestone.reached100) {
+        groupMilestone.reached100 = true;
+        shouldTriggerFireworks = true;
+        message = 'Chúc mừng bạn đã hoàn thành checklist!';
+        // Award medal for completing a checklist
+        const randomIndex = Math.floor(Math.random() * BADGES.length);
+        const newMedal = { ...BADGES[randomIndex], checklistId: group.id, checklistTitle: group.title, earnedAt: new Date().toISOString() };
+        saveMedalToStorage(newMedal);
+      }
+      
+      newMilestones[group.id] = groupMilestone;
+    }
+    
+    // Check if all checklists are 100% complete
+    const allCompleted = updatedChecklists.every(group => {
+      const completed = group.items.filter(item => item.completed).length;
+      const total = group.items.length;
+      return total > 0 && completed === total;
+    });
+    
+    if (allCompleted && !globalCompleted && updatedChecklists.length > 0) {
+      setGlobalCompleted(true);
+      localStorage.setItem(GLOBAL_COMPLETION_KEY, JSON.stringify(true));
+      shouldTriggerFireworks = true;
+      message = 'Bạn đã hoàn thành tất cả checklist! Bạn thật tuyệt vời!';
+      // Award badge
+      if (!earnedBadge) {
+        awardRandomBadge();
+      }
+    }
+    
+    if (shouldTriggerFireworks) {
+      setFireworksMessage(message);
+      setShowFireworks(true);
+      saveMilestones(newMilestones);
+    }
+    
+    return newMilestones;
+  }, [globalCompleted, earnedBadge, awardRandomBadge, saveMilestones, saveMedalToStorage]);
   
   // ===========================
   // Modal Handlers
@@ -446,6 +622,8 @@ const GraceLibrary = () => {
       return group;
     });
     saveChecklists(updated);
+    // Check milestones after toggle
+    checkMilestones(updated, milestones);
   };
   
   const handleAddItem = (groupId: number) => {
@@ -507,7 +685,45 @@ const GraceLibrary = () => {
   const calculateProgress = (items: ChecklistItem[]) => {
     const completed = items.filter(item => item.completed).length;
     const total = items.length;
-    return { completed, total, percentage: total > 0 ? (completed / total) * 100 : 0 };
+    const percentage = total > 0 ? (completed / total) * 100 : 0;
+    return { completed, total, percentage };
+  };
+  
+  // Get progress bar color based on percentage
+  const getProgressColor = (percentage: number): string => {
+    if (percentage === 100) return 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+    if (percentage >= 50) return 'linear-gradient(135deg, #17a2b8 0%, #4fc3f7 100%)';
+    return 'linear-gradient(135deg, #ffc107 0%, #ffca28 100%)';
+  };
+  
+  // Handle reset all checklists
+  const handleResetAll = () => {
+    // Reset checklists to default
+    setChecklists(DEFAULT_CHECKLISTS);
+    localStorage.setItem(CHECKLIST_STORAGE_KEY, JSON.stringify(DEFAULT_CHECKLISTS));
+    
+    // Reset milestones
+    setMilestones({});
+    localStorage.removeItem(MILESTONE_STORAGE_KEY);
+    
+    // Reset badge
+    setEarnedBadge(null);
+    localStorage.removeItem(BADGE_STORAGE_KEY);
+    
+    // Reset medals
+    localStorage.removeItem(MEDALS_STORAGE_KEY);
+    
+    // Reset global completion
+    setGlobalCompleted(false);
+    localStorage.removeItem(GLOBAL_COMPLETION_KEY);
+    
+    // Close confirmation modal
+    setShowResetConfirm(false);
+  };
+  
+  // Close reset confirmation modal
+  const closeResetConfirm = () => {
+    setShowResetConfirm(false);
   };
   
   // ===========================
@@ -524,10 +740,25 @@ const GraceLibrary = () => {
       {/* Fireworks Effect */}
       <FireworksEffect
         show={showFireworks}
-        message="Chúc mừng bạn đã hoàn thành thử thách!"
+        message={fireworksMessage || 'Chúc mừng bạn đã hoàn thành thử thách!'}
         onComplete={() => setShowFireworks(false)}
         duration={4000}
       />
+      
+      {/* Badge Display - Persistent across all tabs */}
+      {earnedBadge && (
+        <div className="badge-earned-banner">
+          <div className="container">
+            <div className="badge-earned-content">
+              <span className="badge-icon-large">{earnedBadge.icon}</span>
+              <div className="badge-info">
+                <span className="badge-label">Huy hiệu của bạn:</span>
+                <span className="badge-name">{earnedBadge.name}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Header Section */}
       <div className="library-header">
@@ -537,7 +768,7 @@ const GraceLibrary = () => {
               <i className="bi bi-book-half"></i>
             </div>
             <h1 className="display-5 fw-bold text-white mb-3">
-              Thư Viện GRACE
+              GRACE Library
             </h1>
             <p className="lead text-white-50 mx-auto" style={{ maxWidth: '600px' }}>
               Khám phá các hoạt động phát triển bản thân và rèn luyện giá trị GRACE
@@ -773,17 +1004,42 @@ const GraceLibrary = () => {
         {/* ======================== */}
         {activeTab === 'checklist' && (
           <div className="container py-4 tab-panel">
+            {/* Badge Display at top of Tab 3 */}
+            {earnedBadge && (
+              <div className="badge-tab-display mb-4">
+                <div className="badge-tab-content">
+                  <span className="badge-icon-display">{earnedBadge.icon}</span>
+                  <div className="badge-text-wrapper">
+                    <span className="badge-display-label">Huy hiệu của bạn</span>
+                    <span className="badge-display-name">{earnedBadge.name}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div className="section-header mb-4">
-              <h2 className="section-title">
-                <i className="bi bi-check2-square me-2"></i>
-                Checklist phát triển bản thân
-              </h2>
-              <p className="section-description">Theo dõi tiến độ rèn luyện hàng ngày của bạn</p>
+              <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <div className="text-center text-md-start">
+                  <h2 className="section-title mb-1">
+                    <i className="bi bi-check2-square me-2"></i>
+                    Checklist phát triển bản thân
+                  </h2>
+                  <p className="section-description mb-0">Theo dõi tiến độ rèn luyện hàng ngày của bạn</p>
+                </div>
+                <button 
+                  className="btn-reset-checklist"
+                  onClick={() => setShowResetConfirm(true)}
+                >
+                  <i className="bi bi-arrow-clockwise me-2"></i>
+                  Reset toàn bộ checklist
+                </button>
+              </div>
             </div>
             
             <div className="row g-4">
               {checklists.map(group => {
                 const progress = calculateProgress(group.items);
+                const progressColor = getProgressColor(progress.percentage);
                 return (
                   <div className="col-12 col-md-6 col-lg-4" key={group.id}>
                     <div 
@@ -804,18 +1060,27 @@ const GraceLibrary = () => {
                       <div className="checklist-progress mb-3">
                         <div className="d-flex justify-content-between mb-2">
                           <span className="progress-text">
-                            {progress.completed} / {progress.total} hoàn thành
+                            Tiến độ: {Math.round(progress.percentage)}%
                           </span>
-                          <span className="progress-percent">{Math.round(progress.percentage)}%</span>
+                          <span className={`progress-status ${
+                            progress.percentage === 100 ? 'status-complete' : 
+                            progress.percentage >= 50 ? 'status-progress' : 'status-warning'
+                          }`}>
+                            {progress.percentage === 100 ? 'Hoàn thành!' : 
+                             progress.percentage >= 50 ? 'Đang tiến bộ' : 'Tiếp tục nào!'}
+                          </span>
                         </div>
                         <ProgressBar
                           progress={progress.percentage}
                           completedTasks={progress.completed}
                           totalTasks={progress.total}
-                          gradient={group.gradient}
-                          height="8px"
+                          gradient={progressColor}
+                          height="10px"
                           showText={false}
                         />
+                        <div className="progress-count mt-1">
+                          <small className="text-muted">{progress.completed} / {progress.total} mục</small>
+                        </div>
                       </div>
                       
                       <div className="checklist-items">
@@ -962,6 +1227,31 @@ const GraceLibrary = () => {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+      
+      {/* Reset Confirmation Modal */}
+      {showResetConfirm && (
+        <div className="reset-modal-overlay" onClick={closeResetConfirm}>
+          <div className="reset-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="reset-modal-icon">
+              <i className="bi bi-exclamation-triangle"></i>
+            </div>
+            <h3 className="reset-modal-title">Xác nhận Reset</h3>
+            <p className="reset-modal-text">
+              Bạn có chắc muốn reset toàn bộ checklist? Tất cả tiến độ, huy hiệu và thành tích sẽ bị xóa.
+            </p>
+            <div className="reset-modal-actions">
+              <button className="btn-confirm-reset" onClick={handleResetAll}>
+                <i className="bi bi-check-lg me-2"></i>
+                Xác nhận
+              </button>
+              <button className="btn-cancel-reset" onClick={closeResetConfirm}>
+                <i className="bi bi-x-lg me-2"></i>
+                Hủy
+              </button>
+            </div>
           </div>
         </div>
       )}
