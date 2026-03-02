@@ -195,7 +195,7 @@ const GRACE_VALUE_CARDS: ValueCard[] = [
     name: 'Respect',
     letter: 'R',
     emoji: '⭐',
-    frameColor: '#5B8C51',
+    frameColor: '#7cea66',
   },
   {
     id: 'accountability',
@@ -209,14 +209,14 @@ const GRACE_VALUE_CARDS: ValueCard[] = [
     name: 'Courage',
     letter: 'C',
     emoji: '💗',
-    frameColor: '#5B8C51',
+    frameColor: '#51848c',
   },
   {
     id: 'engage',
     name: 'Engagement',
     letter: 'E',
     emoji: '🐙',
-    frameColor: '#5B8C51',
+    frameColor: '#2cc89e',
   },
 ];
 
@@ -230,7 +230,7 @@ const SCENARIO_CARDS: ScenarioCard[] = [
   {
     id: 'scenario_2',
     text: 'Bạn sẽ làm gì nếu người khác có quan điểm khác rõ rệt với bạn?',
-    frameColor: '#5B8C51',
+    frameColor: '#7cea66',
   },
   {
     id: 'scenario_3',
@@ -240,12 +240,12 @@ const SCENARIO_CARDS: ScenarioCard[] = [
   {
     id: 'scenario_4',
     text: 'Bạn phát hiện sai sót nghiêm trọng trong dự án nhưng nhóm không muốn thảo luận. Bạn sẽ làm gì trong trường hợp này?',
-    frameColor: '#5B8C51',
+    frameColor: '#51848c',
   },
   {
     id: 'scenario_5',
     text: 'Trong một dự án, An ít nói và không tham gia ý kiến. Nếu bạn là trưởng nhóm của team, bạn sẽ giải quyết như thế nào?',
-    frameColor: '#5B8C51',
+    frameColor: '#2cc89e',
   },
 ];
 
