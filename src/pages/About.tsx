@@ -130,13 +130,13 @@ const About = () => {
                   <div className="info-icon-small">
                     <i className="bi bi-chat-heart-fill"></i>
                   </div>
-                  <p>Nói chuyện chủ động — Phản hồi tử tế</p>
+                  <p>Speak proactively - Respond kindly</p>
                 </div>
                 <div className="info-item full-width">
                   <div className="info-icon-small">
                     <i className="bi bi-phone-fill"></i>
                   </div>
-                  <p>Có sẵn dưới dạng website đáp ứng và ứng dụng di động</p>
+                  <p>Ứng dụng website và di động (responsive)</p>
                 </div>
               </div>
             </div>
@@ -167,7 +167,7 @@ const About = () => {
                 </div>
                 <div className="notice-item">
                   <div className="notice-number">3</div>
-                  <p>Quyền riêng tư được tôn trọng: người dùng có thể <strong>ẩn hoặc xóa</strong> nội dung cá nhân bất cứ lúc nào</p>
+                  <p><strong>Tôn trọng quyền riêng tư:</strong> người dùng có quyền ẩn hoặc xóa các nội dung cá nhân bất cứ lúc nào</p>
                 </div>
                 <div className="notice-item">
                   <div className="notice-number">4</div>
@@ -249,7 +249,7 @@ const About = () => {
           disabled={currentSlide === 0}
         >
           <i className="bi bi-chevron-left"></i>
-          <span className="d-none d-sm-inline ms-2">Previous</span>
+          <span className="d-none d-sm-inline ms-2"></span>
         </button>
 
         <div className="slide-indicators">
@@ -268,7 +268,7 @@ const About = () => {
           onClick={nextSlide}
           disabled={currentSlide === totalSlides - 1}
         >
-          <span className="d-none d-sm-inline me-2">Next</span>
+          <span className="d-none d-sm-inline me-2"></span>
           <i className="bi bi-chevron-right"></i>
         </button>
       </div>

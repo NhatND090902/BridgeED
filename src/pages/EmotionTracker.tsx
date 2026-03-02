@@ -229,7 +229,7 @@ const EmotionTracker = () => {
               <div className="header-icon-wrapper">
                 <i className="bi bi-emoji-smile-fill"></i>
               </div>
-              <h1 className="fw-bold mb-2">Theo Dõi Cảm Xúc</h1>
+              <h1 className="fw-bold mb-2">Emotion Tracker</h1>
               <p className="text-muted mb-0">
                 Ghi lại cảm xúc của bạn mỗi ngày để hiểu rõ hơn về bản thân
               </p>
@@ -249,7 +249,7 @@ const EmotionTracker = () => {
             <div className="emotion-card mb-4">
               <div className="card-header-custom">
                 <i className="bi bi-heart-fill"></i>
-                <span>Chọn cảm xúc của bạn</span>
+                <span>Tâm trạng hiện tại của bạn</span>
               </div>
               <div className="emotion-grid">
                 {EMOTIONS.map((emotion) => (

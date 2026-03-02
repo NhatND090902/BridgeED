@@ -184,7 +184,7 @@ const ValueJournal = () => {
               <div className="header-icon-wrapper">
                 <i className="bi bi-journal-richtext"></i>
               </div>
-              <h1 className="fw-bold mb-2">Nhật Ký Giá Trị</h1>
+              <h1 className="fw-bold mb-2">Value Journal</h1>
               <p className="text-muted mb-0">
                 Ghi lại những hành động thể hiện giá trị GRACE của bạn
               </p>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LineChart, Line } from 'recharts';
 import { DashboardCard } from '../components';
 import type { EmotionLog } from './EmotionTracker';
 import type { ValueJournalEntry } from './ValueJournal';
@@ -52,10 +52,14 @@ const Dashboard = () => {
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState<'emotion' | 'grace'>('emotion');
+  const [selectedTableDate, setSelectedTableDate] = useState<string>(() => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  });
 
   const features = [
     {
-      title: 'Theo Dõi Cảm Xúc',
+      title: 'Emotion Tracker',
       description: 'Ghi lại và theo dõi cảm xúc hàng ngày của bạn.',
       icon: 'bi-emoji-smile',
       color: '#FF6B6B',
@@ -69,28 +73,28 @@ const Dashboard = () => {
       link: '/grace-module',
     },
     {
-      title: 'Nhật Ký Giá Trị',
+      title: 'Value Journal',
       description: 'Phản ánh về giá trị và ghi lại sự phát triển cá nhân.',
       icon: 'bi-journal-text',
       color: '#45B7D1',
       link: '/value-journal',
     },
     {
-      title: 'Thư Viện GRACE',
+      title: 'GRACE Library',
       description: 'Truy cập tài liệu và nguồn lực sức khỏe cảm xúc.',
       icon: 'bi-book',
       color: '#96CEB4',
       link: '/grace-library',
     },
     {
-      title: 'Chat Ẩn Danh',
+      title: 'Anonymous Chat',
       description: 'Kết nối với người khác trong môi trường an toàn.',
       icon: 'bi-chat-dots',
       color: '#DDA0DD',
       link: '/anonymous-chat',
     },
     {
-      title: 'Giới Thiệu',
+      title: 'About BridgeED',
       description: 'Tìm hiểu thêm về sứ mệnh và đội ngũ của chúng tôi.',
       icon: 'bi-info-circle',
       color: '#F7DC6F',
@@ -310,6 +314,151 @@ const Dashboard = () => {
     };
   }, [valueJournals]);
 
+  // Line Chart Data - Last 7 days frequency
+  const last7DaysData = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const data: { date: string; dateLabel: string; count: number }[] = [];
+    
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      const dateLabel = date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+      
+      const count = valueJournals.filter(j => j.date === dateStr).length;
+      data.push({ date: dateStr, dateLabel, count });
+    }
+    
+    return data;
+  }, [valueJournals]);
+
+  // Comparison Statistics - Week and Month
+  const comparisonStats = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Helper function to get start of week (Monday)
+    const getStartOfWeek = (date: Date) => {
+      const d = new Date(date);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      d.setDate(diff);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    };
+    
+    // This week
+    const thisWeekStart = getStartOfWeek(today);
+    const thisWeekEnd = new Date(thisWeekStart);
+    thisWeekEnd.setDate(thisWeekEnd.getDate() + 6);
+    thisWeekEnd.setHours(23, 59, 59, 999);
+    
+    // Last week
+    const lastWeekStart = new Date(thisWeekStart);
+    lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+    const lastWeekEnd = new Date(thisWeekStart);
+    lastWeekEnd.setMilliseconds(-1);
+    
+    // This month
+    const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    const thisMonthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
+    
+    // Last month
+    const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59, 999);
+    
+    // Count records for each period
+    const countInPeriod = (start: Date, end: Date) => {
+      return valueJournals.filter(j => {
+        const journalDate = new Date(j.date);
+        journalDate.setHours(12, 0, 0, 0);
+        return journalDate >= start && journalDate <= end;
+      }).length;
+    };
+    
+    const thisWeekCount = countInPeriod(thisWeekStart, thisWeekEnd);
+    const lastWeekCount = countInPeriod(lastWeekStart, lastWeekEnd);
+    const thisMonthCount = countInPeriod(thisMonthStart, thisMonthEnd);
+    const lastMonthCount = countInPeriod(lastMonthStart, lastMonthEnd);
+    
+    // Calculate percentages
+    const weekChange = lastWeekCount === 0 
+      ? (thisWeekCount > 0 ? 100 : 0)
+      : Math.round(((thisWeekCount - lastWeekCount) / lastWeekCount) * 100);
+    
+    const monthChange = lastMonthCount === 0 
+      ? (thisMonthCount > 0 ? 100 : 0)
+      : Math.round(((thisMonthCount - lastMonthCount) / lastMonthCount) * 100);
+    
+    return {
+      thisWeekCount,
+      lastWeekCount,
+      thisMonthCount,
+      lastMonthCount,
+      weekChange,
+      monthChange,
+    };
+  }, [valueJournals]);
+
+  // Today's Pie Chart Data
+  const todayPieData = useMemo(() => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayJournals = valueJournals.filter(j => j.date === todayStr);
+    
+    // Group by valueKey
+    const valueCounts: { [key: string]: number } = {};
+    GRACE_VALUES.forEach(v => {
+      valueCounts[v.key] = 0;
+    });
+    
+    todayJournals.forEach(journal => {
+      if (valueCounts[journal.valueKey] !== undefined) {
+        valueCounts[journal.valueKey]++;
+      }
+    });
+    
+    // Create pie data
+    const pieData = GRACE_VALUES.map(v => ({
+      name: v.label,
+      value: valueCounts[v.key],
+      emoji: v.emoji,
+      color: v.color,
+    })).filter(d => d.value > 0);
+    
+    const total = todayJournals.length;
+    
+    return { pieData, total };
+  }, [valueJournals]);
+
+  // Table Data for Selected Date
+  const tableData = useMemo(() => {
+    const selectedJournals = valueJournals.filter(j => j.date === selectedTableDate);
+    
+    // Group by valueKey
+    const grouped: { [key: string]: { valueLabel: string; emoji: string; color: string; count: number; contents: string[] } } = {};
+    
+    selectedJournals.forEach(journal => {
+      if (!grouped[journal.valueKey]) {
+        const graceValue = GRACE_VALUES.find(v => v.key === journal.valueKey);
+        grouped[journal.valueKey] = {
+          valueLabel: journal.valueLabel || graceValue?.label || journal.valueKey,
+          emoji: journal.emoji || graceValue?.emoji || '',
+          color: journal.color || graceValue?.color || '#666',
+          count: 0,
+          contents: [],
+        };
+      }
+      grouped[journal.valueKey].count++;
+      if (journal.content) {
+        grouped[journal.valueKey].contents.push(journal.content);
+      }
+    });
+    
+    return Object.values(grouped);
+  }, [valueJournals, selectedTableDate]);
+
   // Format date for display
   const formatDateFull = (date: Date) => {
     return date.toLocaleDateString('vi-VN', {
@@ -347,14 +496,14 @@ const Dashboard = () => {
             onClick={() => setActiveTab('emotion')}
           >
             <i className="bi bi-calendar-heart me-2"></i>
-            Lịch theo dõi cảm xúc
+            Biểu đồ Cảm xúc
           </button>
           <button
             className={`dashboard-tab ${activeTab === 'grace' ? 'active' : ''}`}
             onClick={() => setActiveTab('grace')}
           >
             <i className="bi bi-journal-richtext me-2"></i>
-            Thống kê giá trị GRACE
+            Biểu đồ Hành vi tích cực
           </button>
         </div>
 
@@ -411,7 +560,7 @@ const Dashboard = () => {
                 <div className="calendar-header">
                   <div className="calendar-title">
                     <i className="bi bi-calendar-heart"></i>
-                    <span>Lịch theo dõi cảm xúc</span>
+                    <span>DASHBOARD THEO DÕI CẢM XÚC</span>
                   </div>
                   <div className="calendar-nav">
                     <button className="nav-btn" onClick={goToPreviousMonth}>
@@ -518,7 +667,7 @@ const Dashboard = () => {
           {/* GRACE Statistics Tab */}
           {activeTab === 'grace' && (
             <div className="tab-panel grace-tab-panel">
-              {/* Value Stats Cards */}
+              {/* Summary Stats Row */}
               <div className="row g-3 mb-4">
                 <div className="col-4">
                   <div className="stat-card stat-value-total">
@@ -567,89 +716,134 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Charts Row */}
+              {/* Row 1: Line Chart - Full Width */}
               <div className="row g-3 mb-4">
-                {/* Bar Chart */}
-                <div className="col-12 col-lg-7">
+                <div className="col-12">
                   <div className="chart-card">
                     <h3 className="chart-title">
-                      <i className="bi bi-bar-chart-fill me-2"></i>
-                      Biểu đồ giá trị GRACE
+                      <i className="bi bi-graph-up me-2"></i>
+                      Biểu đồ theo dõi cảm xúc theo ngày
                     </h3>
-                    {valueStats.totalJournals > 0 ? (
-                      <div className="chart-container">
-                        <ResponsiveContainer width="100%" height={280}>
-                          <BarChart data={valueStats.chartData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e9ecef" />
-                            <XAxis 
-                              dataKey="name" 
-                              tick={{ fill: '#666', fontSize: 12 }}
-                              axisLine={{ stroke: '#dee2e6' }}
-                            />
-                            <YAxis 
-                              allowDecimals={false}
-                              tick={{ fill: '#666', fontSize: 12 }}
-                              axisLine={{ stroke: '#dee2e6' }}
-                              label={{ value: 'Số lần thực hiện', angle: -90, position: 'insideLeft', fill: '#666', fontSize: 12 }}
-                            />
-                            <Tooltip 
-                              formatter={(value) => [value, 'Số lần']}
-                              contentStyle={{ 
-                                borderRadius: '12px', 
-                                border: 'none',
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                              }}
-                            />
-                            <Bar 
-                              dataKey="value" 
-                              radius={[8, 8, 0, 0]}
-                              maxBarSize={50}
-                            >
-                              {valueStats.chartData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
-                              ))}
-                            </Bar>
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
-                    ) : (
-                      <div className="chart-empty">
-                        <i className="bi bi-bar-chart"></i>
-                        <p>Chưa có dữ liệu nhật ký</p>
-                        <Link to="/value-journal" className="chart-empty-link">
-                          Bắt đầu viết nhật ký →
-                        </Link>
-                      </div>
-                    )}
+                    <div className="chart-container">
+                      <ResponsiveContainer width="100%" height={280}>
+                        <LineChart data={last7DaysData} margin={{ top: 10, right: 30, left: 0, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e9ecef" />
+                          <XAxis 
+                            dataKey="dateLabel" 
+                            tick={{ fill: '#666', fontSize: 12 }}
+                            axisLine={{ stroke: '#dee2e6' }}
+                          />
+                          <YAxis 
+                            allowDecimals={false}
+                            tick={{ fill: '#666', fontSize: 12 }}
+                            axisLine={{ stroke: '#dee2e6' }}
+                            label={{ value: 'Số lần ghi nhận', angle: -90, position: 'insideLeft', fill: '#666', fontSize: 12 }}
+                          />
+                          <Tooltip 
+                            formatter={(value) => [value, 'Số lần']}
+                            labelFormatter={(label) => `Ngày: ${label}`}
+                            contentStyle={{ 
+                              borderRadius: '12px', 
+                              border: 'none',
+                              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                            }}
+                          />
+                          <Line 
+                            type="monotone" 
+                            dataKey="count" 
+                            stroke="#4ECDC4" 
+                            strokeWidth={3}
+                            dot={{ fill: '#4ECDC4', strokeWidth: 2, r: 5 }}
+                            activeDot={{ r: 8, fill: '#FF6B6B' }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Pie Chart */}
+              {/* Row 2: Comparison Stats Cards */}
+              <div className="row g-3 mb-4">
+                <div className="col-6 col-md-3">
+                  <div className="stat-card stat-value-total">
+                    <div className="stat-icon">
+                      <i className="bi bi-calendar-week"></i>
+                    </div>
+                    <div className="stat-content">
+                      <span className="stat-value">{comparisonStats.thisWeekCount}</span>
+                      <span className="">Tuần này</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-6 col-md-3">
+                  <div className="stat-card stat-practiced">
+                    <div className="stat-icon">
+                      <i className="bi bi-calendar-month"></i>
+                    </div>
+                    <div className="stat-content">
+                      <span className="stat-value">{comparisonStats.thisMonthCount}</span>
+                      <span className="">Tháng này</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-6 col-md-3">
+                  <div className={`stat-card ${comparisonStats.weekChange >= 0 ? 'stat-increase' : 'stat-decrease'}`}>
+                    <div className="stat-icon">
+                      <i className={`bi ${comparisonStats.weekChange >= 0 ? 'bi-arrow-up-circle' : 'bi-arrow-down-circle'}`}></i>
+                    </div>
+                    <div className="stat-content">
+                      <span className="stat-value" style={{ color: comparisonStats.weekChange >= 0 ? '#28a745' : '#dc3545' }}>
+                        {comparisonStats.weekChange >= 0 ? '+' : ''}{comparisonStats.weekChange}%
+                      </span>
+                      <span className="">So với tuần trước</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-6 col-md-3">
+                  <div className={`stat-card ${comparisonStats.monthChange >= 0 ? 'stat-increase' : 'stat-decrease'}`}>
+                    <div className="stat-icon">
+                      <i className={`bi ${comparisonStats.monthChange >= 0 ? 'bi-arrow-up-circle' : 'bi-arrow-down-circle'}`}></i>
+                    </div>
+                    <div className="stat-content">
+                      <span className="stat-value" style={{ color: comparisonStats.monthChange >= 0 ? '#28a745' : '#dc3545' }}>
+                        {comparisonStats.monthChange >= 0 ? '+' : ''}{comparisonStats.monthChange}%
+                      </span>
+                      <span className="">So với tháng trước</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 3: Today's Pie Chart and Table */}
+              <div className="row g-3 mb-4">
+                {/* Today's Pie Chart */}
                 <div className="col-12 col-lg-5">
                   <div className="chart-card">
                     <h3 className="chart-title">
                       <i className="bi bi-pie-chart-fill me-2"></i>
-                      Tỉ lệ các giá trị
+                      Biểu đồ cảm xúc ảnh hưởng bởi các giá trị GRACE
                     </h3>
-                    {valueStats.pieData.length > 0 ? (
+                    {todayPieData.pieData.length > 0 ? (
                       <div className="chart-container">
                         <ResponsiveContainer width="100%" height={280}>
                           <PieChart>
                             <Pie
-                              data={valueStats.pieData}
+                              data={todayPieData.pieData}
                               cx="50%"
                               cy="50%"
                               innerRadius={50}
                               outerRadius={90}
                               paddingAngle={3}
                               dataKey="value"
+                              label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                             >
-                              {valueStats.pieData.map((entry, index) => (
+                              {todayPieData.pieData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.color} />
                               ))}
                             </Pie>
                             <Tooltip 
-                              formatter={(value) => [value, 'Số lần']}
+                              formatter={(value, name) => [value, name]}
                               contentStyle={{ 
                                 borderRadius: '12px', 
                                 border: 'none',
@@ -669,7 +863,74 @@ const Dashboard = () => {
                     ) : (
                       <div className="chart-empty">
                         <i className="bi bi-pie-chart"></i>
-                        <p>Chưa có dữ liệu</p>
+                        <p>Không có dữ liệu hôm nay</p>
+                        <Link to="/value-journal" className="chart-empty-link">
+                          Ghi nhận hành vi tích cực →
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Table with Date Picker */}
+                <div className="col-12 col-lg-7">
+                  <div className="chart-card table-card">
+                    <div className="table-header">
+                      <h3 className="chart-title">
+                        <i className="bi bi-table me-2"></i>
+                        Thống kê số việc làm tích cực theo 5 giá trị GRACE
+                      </h3>
+                      <div className="date-picker-wrapper">
+                        <label htmlFor="table-date" className="date-picker-label">
+                          <i className="bi bi-calendar3 me-1"></i>
+                          Chọn ngày:
+                        </label>
+                        <input
+                          type="date"
+                          id="table-date"
+                          className="date-picker-input"
+                          value={selectedTableDate}
+                          onChange={(e) => setSelectedTableDate(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    {tableData.length > 0 ? (
+                      <div className="table-responsive">
+                        <table className="table grace-table">
+                          <thead>
+                            <tr>
+                              <th>Giá trị</th>
+                              <th>Các việc đã làm</th>
+                              <th className="text-center">Số lần</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {tableData.map((row, index) => (
+                              <tr key={index}>
+                                <td>
+                                  <span className="value-badge" style={{ backgroundColor: row.color }}>
+                                    {row.emoji} {row.valueLabel}
+                                  </span>
+                                </td>
+                                <td>
+                                  <ul className="content-list">
+                                    {row.contents.map((content, idx) => (
+                                      <li key={idx}>{content}</li>
+                                    ))}
+                                  </ul>
+                                </td>
+                                <td className="text-center">
+                                  <span className="count-badge">{row.count}</span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div className="table-empty">
+                        <i className="bi bi-inbox"></i>
+                        <p>Không có dữ liệu cho ngày đã chọn</p>
                       </div>
                     )}
                   </div>
@@ -699,7 +960,7 @@ const Dashboard = () => {
               <div className="quick-add-cta mt-4">
                 <Link to="/value-journal" className="quick-add-btn grace-btn">
                   <i className="bi bi-journal-plus me-2"></i>
-                  Viết nhật ký giá trị
+                  Ghi nhận hành vi tích cực hôm nay
                 </Link>
               </div>
             </div>
@@ -731,7 +992,7 @@ const Dashboard = () => {
         {/* Call to Action */}
         <div className="cta-card">
           <div className="cta-content">
-            <h3 className="fw-bold mb-2">Bắt đầu hành trình sức khỏe của bạn</h3>
+            <h3 className="fw-bold mb-2">Bắt đầu</h3>
             <p className="mb-3">Theo dõi cảm xúc, thực hành chánh niệm, và phát triển mỗi ngày.</p>
             <Link to="/emotion-tracker" className="cta-btn">
               <i className="bi bi-play-fill me-2"></i>
@@ -820,7 +1081,7 @@ const Dashboard = () => {
                   <p className="empty-text">Không có dữ liệu cho ngày này</p>
                   <Link to="/emotion-tracker" className="empty-action" onClick={closeModal}>
                     <i className="bi bi-plus-circle me-2"></i>
-                    Ghi nhận cảm xúc
+                    Ghi nhận cảm xúc ngay
                   </Link>
                 </div>
               )}
