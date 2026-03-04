@@ -75,7 +75,7 @@ interface ScenarioCard {
 // ===========================
 const CHECKLIST_STORAGE_KEY = "graceLibraryChecklists";
 const MILESTONE_STORAGE_KEY = "graceLibraryMilestones";
-const BADGE_STORAGE_KEY = "graceLibraryBadge";
+// const BADGE_STORAGE_KEY = "graceLibraryBadge";
 const MEDALS_STORAGE_KEY = "graceLibraryMedals";
 const GLOBAL_COMPLETION_KEY = "graceLibraryGlobalComplete";
 
@@ -175,16 +175,16 @@ const GraceLibrary = () => {
     };
 
     // Load badge from localStorage
-    const loadBadge = () => {
-      try {
-        const stored = localStorage.getItem(BADGE_STORAGE_KEY);
-        if (stored) {
-          setEarnedBadge(JSON.parse(stored));
-        }
-      } catch {
-        setEarnedBadge(null);
-      }
-    };
+    // const loadBadge = () => {
+    //   try {
+    //     const stored = localStorage.getItem(BADGE_STORAGE_KEY);
+    //     if (stored) {
+    //       setEarnedBadge(JSON.parse(stored));
+    //     }
+    //   } catch {
+    //     setEarnedBadge(null);
+    //   }
+    // };
 
     // Load global completion status
     const loadGlobalCompletion = () => {
@@ -200,7 +200,7 @@ const GraceLibrary = () => {
 
     loadChecklists();
     loadMilestones();
-    loadBadge();
+    // loadBadge();
     loadGlobalCompletion();
   }, []);
 
@@ -223,14 +223,14 @@ const GraceLibrary = () => {
   }, []);
 
   // Save badge to localStorage
-  const saveBadge = useCallback((badge: Badge | null) => {
-    setEarnedBadge(badge);
-    if (badge) {
-      localStorage.setItem(BADGE_STORAGE_KEY, JSON.stringify(badge));
-    } else {
-      localStorage.removeItem(BADGE_STORAGE_KEY);
-    }
-  }, []);
+  // const saveBadge = useCallback((badge: Badge | null) => {
+  //   setEarnedBadge(badge);
+  //   if (badge) {
+  //     localStorage.setItem(BADGE_STORAGE_KEY, JSON.stringify(badge));
+  //   } else {
+  //     localStorage.removeItem(BADGE_STORAGE_KEY);
+  //   }
+  // }, []);
 
   // Save medal to localStorage (stores all earned medals)
   const saveMedalToStorage = useCallback(
@@ -259,12 +259,12 @@ const GraceLibrary = () => {
   );
 
   // Award random badge
-  const awardRandomBadge = useCallback(() => {
-    const randomIndex = Math.floor(Math.random() * BADGES.length);
-    const badge = BADGES[randomIndex];
-    saveBadge(badge);
-    return badge;
-  }, [saveBadge]);
+  // const awardRandomBadge = useCallback(() => {
+  //   const randomIndex = Math.floor(Math.random() * BADGES.length);
+  //   const badge = BADGES[randomIndex];
+  //   // saveBadge(badge);
+  //   return badge;
+  // }, [saveBadge]);
 
   // Check milestone progress and trigger fireworks
   const checkMilestones = useCallback(
@@ -324,9 +324,9 @@ const GraceLibrary = () => {
         };
         saveMedalToStorage(newMedal);
         // Award badge
-        if (!earnedBadge) {
-          awardRandomBadge();
-        }
+        // if (!earnedBadge) {
+        //   awardRandomBadge();
+        // }
       }
 
       if (shouldTriggerFireworks) {
@@ -340,7 +340,7 @@ const GraceLibrary = () => {
     [
       globalCompleted,
       earnedBadge,
-      awardRandomBadge,
+      // awardRandomBadge,
       saveMilestones,
       saveMedalToStorage,
     ],
@@ -467,11 +467,11 @@ const GraceLibrary = () => {
     localStorage.removeItem(MILESTONE_STORAGE_KEY);
 
     // Reset badge
-    setEarnedBadge(null);
-    localStorage.removeItem(BADGE_STORAGE_KEY);
+    // setEarnedBadge(null);
+    // localStorage.removeItem(BADGE_STORAGE_KEY);
 
     // Reset medals
-    localStorage.removeItem(MEDALS_STORAGE_KEY);
+    // localStorage.removeItem(MEDALS_STORAGE_KEY);
 
     // Reset global completion
     setGlobalCompleted(false);
@@ -504,22 +504,6 @@ const GraceLibrary = () => {
         onComplete={() => setShowFireworks(false)}
         duration={4000}
       />
-
-      {/* Badge Display - Persistent across all tabs */}
-      {earnedBadge && (
-        <div className="badge-earned-banner">
-          <div className="container">
-            <div className="badge-earned-content">
-              <span className="badge-icon-large">{earnedBadge.icon}</span>
-              <div className="badge-info">
-                <span className="badge-label">Huy hiệu của bạn:</span>
-                <span className="badge-name">{earnedBadge.name}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Header Section */}
       <div className="library-header">
         <div className="container">
