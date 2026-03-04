@@ -1,14 +1,26 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import UserService from "../services/UserService";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Login attempted with: ${email}`);
+    const result = UserService.login(username, password);
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+    // Reset form (optional)
+    setUsername("");
+    setPassword("");
+    // Redirect về trang chủ
+    navigate("/");
   };
 
   return (
@@ -19,30 +31,35 @@ const Login = () => {
             <div className="card-body p-4 p-md-5">
               {/* Header */}
               <div className="text-center mb-4">
-                <div className="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '64px', height: '64px' }}>
+                <div
+                  className="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                  style={{ width: "64px", height: "64px" }}
+                >
                   <i className="bi bi-person-circle text-primary fs-2"></i>
                 </div>
-                <h2 className="fw-bold">Welcome Back</h2>
-                <p className="text-muted">Sign in to continue your wellness journey</p>
+                <h2 className="fw-bold">Chào mừng trở lại</h2>
+                <p className="text-muted">
+                  Sign in to continue your wellness journey
+                </p>
               </div>
 
               {/* Form */}
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <label htmlFor="email" className="form-label fw-semibold">
-                    Email Address
+                  <label htmlFor="username" className="form-label fw-semibold">
+                    Tài khoản
                   </label>
                   <div className="input-group">
                     <span className="input-group-text bg-light">
                       <i className="bi bi-envelope text-muted"></i>
                     </span>
                     <input
-                      type="email"
+                      type="username"
                       className="form-control"
-                      id="email"
-                      placeholder="you@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      id="username"
+                      placeholder="Tên tài khoản"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                       required
                     />
                   </div>
@@ -50,17 +67,17 @@ const Login = () => {
 
                 <div className="mb-3">
                   <label htmlFor="password" className="form-label fw-semibold">
-                    Password
+                    Mật Khẩu
                   </label>
                   <div className="input-group">
                     <span className="input-group-text bg-light">
                       <i className="bi bi-lock text-muted"></i>
                     </span>
                     <input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       className="form-control"
                       id="password"
-                      placeholder="Enter your password"
+                      placeholder="Nhập mật khẩu"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
@@ -70,44 +87,42 @@ const Login = () => {
                       className="btn btn-outline-secondary"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+                      <i
+                        className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
+                      ></i>
                     </button>
                   </div>
-                </div>
-
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                  <div className="form-check">
-                    <input type="checkbox" className="form-check-input" id="remember" />
-                    <label htmlFor="remember" className="form-check-label small">
-                      Remember me
-                    </label>
-                  </div>
-                  <a href="#" className="small text-primary text-decoration-none">
-                    Forgot Password?
-                  </a>
                 </div>
 
                 <div className="d-grid mb-4">
                   <button type="submit" className="btn btn-primary btn-lg">
                     <i className="bi bi-box-arrow-in-right me-2"></i>
-                    Sign In
+                    Đăng nhập
                   </button>
                 </div>
 
                 {/* Divider */}
                 <div className="d-flex align-items-center mb-4">
                   <hr className="flex-grow-1" />
-                  <span className="px-3 text-muted small">or continue with</span>
+                  <span className="px-3 text-muted small">
+                    hoặc tiếp tục với
+                  </span>
                   <hr className="flex-grow-1" />
                 </div>
 
                 {/* Social Login */}
                 <div className="d-flex gap-2 mb-4">
-                  <button type="button" className="btn btn-outline-secondary flex-grow-1">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary flex-grow-1"
+                  >
                     <i className="bi bi-google me-2"></i>
                     Google
                   </button>
-                  <button type="button" className="btn btn-outline-secondary flex-grow-1">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary flex-grow-1"
+                  >
                     <i className="bi bi-facebook me-2"></i>
                     Facebook
                   </button>
@@ -115,9 +130,12 @@ const Login = () => {
 
                 {/* Register Link */}
                 <p className="text-center text-muted mb-0">
-                  Don't have an account?{' '}
-                  <Link to="/register" className="text-primary fw-semibold text-decoration-none">
-                    Sign up
+                  Chưa có tài khoản?{" "}
+                  <Link
+                    to="/register"
+                    className="text-primary fw-semibold text-decoration-none"
+                  >
+                    Đăng ký
                   </Link>
                 </p>
               </form>

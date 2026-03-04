@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { MainLayout, AuthLayout } from './layouts';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { MainLayout, AuthLayout } from "./layouts";
 import {
   Dashboard,
   EmotionTracker,
@@ -10,7 +10,8 @@ import {
   About,
   Login,
   Register,
-} from './pages';
+} from "./pages";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/grace-library" element={<GraceLibrary />} />
           <Route path="/anonymous-chat" element={<AnonymousChat />} />
           <Route path="/about" element={<About />} />
+          <Route path="/infor" element={<Profile />} />
         </Route>
 
         {/* Auth Layout Routes */}

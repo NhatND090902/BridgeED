@@ -1,15 +1,17 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import UserService from "../services/UserService";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    name: "",
+    username: "",
+    password: "",
+    confirmPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -21,14 +23,28 @@ const Register = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
+      alert("Mật khẩu không khớp!");
       return;
     }
-    if (!agreedToTerms) {
-      alert('Please agree to the terms and conditions');
+    const result = UserService.register({
+      name: formData.name,
+      username: formData.username,
+      password: formData.password,
+    });
+    if (!result.success) {
+      alert(result.message);
       return;
     }
-    alert(`Registration attempted for: ${formData.email}`);
+    alert(`Đăng ký thành công tài khoản: ${formData.username}`);
+    setFormData({
+      name: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+    });
+    setTimeout(() => {
+      navigate("/login");
+    }, 1000);
   };
 
   return (
@@ -39,18 +55,23 @@ const Register = () => {
             <div className="card-body p-4 p-md-5">
               {/* Header */}
               <div className="text-center mb-4">
-                <div className="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '64px', height: '64px' }}>
+                <div
+                  className="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                  style={{ width: "64px", height: "64px" }}
+                >
                   <i className="bi bi-person-plus text-primary fs-2"></i>
                 </div>
                 <h2 className="fw-bold">Create Account</h2>
-                <p className="text-muted">Start your emotional wellness journey today</p>
+                <p className="text-muted">
+                  Start your emotional wellness journey today
+                </p>
               </div>
 
               {/* Form */}
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label htmlFor="name" className="form-label fw-semibold">
-                    Full Name
+                    Họ và tên
                   </label>
                   <div className="input-group">
                     <span className="input-group-text bg-light">
@@ -61,7 +82,7 @@ const Register = () => {
                       className="form-control"
                       id="name"
                       name="name"
-                      placeholder="John Doe"
+                      placeholder="Nhập họ và tên"
                       value={formData.name}
                       onChange={handleChange}
                       required
@@ -70,20 +91,20 @@ const Register = () => {
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="email" className="form-label fw-semibold">
-                    Email Address
+                  <label htmlFor="username" className="form-label fw-semibold">
+                    Tên tài khoản
                   </label>
                   <div className="input-group">
                     <span className="input-group-text bg-light">
                       <i className="bi bi-envelope text-muted"></i>
                     </span>
                     <input
-                      type="email"
+                      type="text"
                       className="form-control"
-                      id="email"
-                      name="email"
-                      placeholder="you@example.com"
-                      value={formData.email}
+                      id="username"
+                      name="username"
+                      placeholder="Nhập tên tài khoản"
+                      value={formData.username}
                       onChange={handleChange}
                       required
                     />
@@ -92,18 +113,18 @@ const Register = () => {
 
                 <div className="mb-3">
                   <label htmlFor="password" className="form-label fw-semibold">
-                    Password
+                    Mật khẩu
                   </label>
                   <div className="input-group">
                     <span className="input-group-text bg-light">
                       <i className="bi bi-lock text-muted"></i>
                     </span>
                     <input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       className="form-control"
                       id="password"
                       name="password"
-                      placeholder="Create a strong password"
+                      placeholder="Nhập mật khẩu"
                       value={formData.password}
                       onChange={handleChange}
                       required
@@ -114,80 +135,78 @@ const Register = () => {
                       className="btn btn-outline-secondary"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+                      <i
+                        className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
+                      ></i>
                     </button>
                   </div>
-                  <small className="text-muted">Must be at least 8 characters</small>
+                  <small className="text-muted">
+                    Mật khẩu chứa ít nhất 8 ký tự
+                  </small>
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="confirmPassword" className="form-label fw-semibold">
-                    Confirm Password
+                  <label
+                    htmlFor="confirmPassword"
+                    className="form-label fw-semibold"
+                  >
+                    Nhập lại mật khẩu
                   </label>
                   <div className="input-group">
                     <span className="input-group-text bg-light">
                       <i className="bi bi-lock-fill text-muted"></i>
                     </span>
                     <input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       className="form-control"
                       id="confirmPassword"
                       name="confirmPassword"
-                      placeholder="Confirm your password"
+                      placeholder="Nhập lại mật khẩu"
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       required
                     />
                   </div>
                 </div>
-
-                <div className="form-check mb-4">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id="terms"
-                    checked={agreedToTerms}
-                    onChange={(e) => setAgreedToTerms(e.target.checked)}
-                  />
-                  <label htmlFor="terms" className="form-check-label small">
-                    I agree to the{' '}
-                    <a href="#" className="text-primary">Terms of Service</a>
-                    {' '}and{' '}
-                    <a href="#" className="text-primary">Privacy Policy</a>
-                  </label>
-                </div>
-
                 <div className="d-grid mb-4">
                   <button type="submit" className="btn btn-primary btn-lg">
                     <i className="bi bi-person-plus me-2"></i>
-                    Create Account
+                    Đăng ký
                   </button>
                 </div>
-
                 {/* Divider */}
                 <div className="d-flex align-items-center mb-4">
                   <hr className="flex-grow-1" />
-                  <span className="px-3 text-muted small">or sign up with</span>
+                  <span className="px-3 text-muted small">
+                    hoặc tiếp tục với
+                  </span>
                   <hr className="flex-grow-1" />
                 </div>
-
-                {/* Social Sign Up */}
+                {/* Social Login */}
                 <div className="d-flex gap-2 mb-4">
-                  <button type="button" className="btn btn-outline-secondary flex-grow-1">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary flex-grow-1"
+                  >
                     <i className="bi bi-google me-2"></i>
                     Google
                   </button>
-                  <button type="button" className="btn btn-outline-secondary flex-grow-1">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary flex-grow-1"
+                  >
                     <i className="bi bi-facebook me-2"></i>
                     Facebook
                   </button>
                 </div>
-
                 {/* Login Link */}
                 <p className="text-center text-muted mb-0">
-                  Already have an account?{' '}
-                  <Link to="/login" className="text-primary fw-semibold text-decoration-none">
-                    Sign in
+                  Bạn đã có tài khoản?{" "}
+                  <Link
+                    to="/login"
+                    className="text-primary fw-semibold text-decoration-none"
+                  >
+                    Đăng nhập
                   </Link>
                 </p>
               </form>
