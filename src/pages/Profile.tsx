@@ -22,9 +22,15 @@ const Profile = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
+    const currentUser = UserService.getCurrentUser();
+    if (!currentUser) return;
     const stored = localStorage.getItem("graceLibraryMedals");
     if (stored) {
-      setMedals(JSON.parse(stored));
+      const allMedals = JSON.parse(stored);
+      const userMedals = allMedals.filter(
+        (m: { userId: string }) => m.userId === currentUser.id,
+      );
+      setMedals(userMedals);
     }
   }, []);
 
